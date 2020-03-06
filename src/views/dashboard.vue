@@ -2,7 +2,7 @@
     <div id="map">
         <div class="headerBox">
             <img src="../../src/assets/images/logo.png" alt="">
-            <p class="title">中国(南京)智谷产业生态分布图</p>
+            <p class="title">江苏省5G产业联盟产业生态图</p>
         </div>
         <div class="switchBox">
             <span class="switchTitle">卫星影像</span><el-switch v-model="switchMap" active-color="#13ce66" inactive-color="#ff4949" @change="setMapTheme"></el-switch>
@@ -16,7 +16,7 @@
         <div class="leftBox">
             <div class="leftItemsBox">
                 <div class="leftheaderBox">
-                    <p class="headerTitle">行业从业人数</p>
+                    <p class="headerTitle">行业从业人数分布</p>
                 </div>
                 <div class="etitle">从业人数:28766人</div>
                 <div id="enterprise"></div>
@@ -36,7 +36,7 @@
             </el-input>
             <div style="height:20px"></div>
             <div class="leftheaderBox">
-                <p class="headerTitle">中国(南京)智谷AI应用场景</p>
+                <p class="headerTitle">江苏省5G产业联盟应用场景</p>
             </div>
             <div class="content">
                 <div class="btnGroups">
