@@ -18,7 +18,7 @@
                 <div class="leftheaderBox">
                     <p class="headerTitle">行业从业人数分布</p>
                 </div>
-                <div class="etitle">从业人数:28766人</div>
+                <div class="etitle">从业人数:161500人</div>
                 <div id="enterprise"></div>
             </div>
             <div class="leftItemsBox">
@@ -144,16 +144,14 @@
             <div class="divider"></div>
             <div class="enterpriseBox">
                 <el-tabs v-model="activeIndex" :tab-position="tabPosition" style="height: 200px;" :stretch="false" @tab-click="handleTabClick">
-                    <el-tab-pane  v-for="(item,index) in enterpriseList" :key="index" :label="item.enterpriseName">
+                    <el-tab-pane  v-for="(item,index) in enterpriseList" :key="index" :label="item.company">
                         <div class="enterpriseDetail">
-                            <singleEcharts :id="item.enterpriseName"></singleEcharts>
+                            <singleEcharts :id="item.company"></singleEcharts>
                             <div class="detailBox">
-                                <p>法人：{{legalPerson}}</p>
-                                <p>注册资金：{{item.registeredCapital}}万元</p>
-                                <p>AI方向：{{item.AIbusiness}}</p>
-                                <p>主营业务：{{item.content}}</p>
-                                <p>所属区：{{item.Itsarea}}</p>
-                                <p>地址：{{item.area}}</p>
+                                <p>主营：{{item.business}}</p>
+                                <p>2019收入：{{item.income}}万元</p>
+                                <p>产品：{{item.product}}</p>
+                                <p>预期效果：{{item.hopelis}}</p>
                             </div>
                         </div>
                        <div class="tagBox">
@@ -215,12 +213,11 @@
                         <div class="enterpriseDetail">
                             <singleEcharts :id="enterpriseName"></singleEcharts>
                             <div class="detailBox">
-                                <p>法人：{{enterprise.legalPerson}}</p>
-                                <p>注册资金：{{enterprise.registeredCapital}}万元</p>
-                                <p>AI方向：{{enterprise.AIbusiness}}</p>
-                                <p>主营业务：{{enterprise.content}}</p>
-                                <p>所属区：{{enterprise.Itsarea}}</p>
-                                <p>地址：{{enterprise.area}}</p>
+                                <!-- <p>法人：{{enterprise.legalPerson}}</p> -->
+                                <p>主营：{{enterprise.business}}</p>
+                                <p>2019收入：{{enterprise.income}}</p>
+                                <p>产品：{{enterprise.product}}</p>
+                                <p>预期效果：{{enterprise.hopelis}}</p>
                             </div>
                         </div>
                        <div class="tagBox">
@@ -281,6 +278,8 @@ import axios from 'axios'
 import mydottedLine from '../fiveData/fivegData.json'
 import projectData from '../fiveData/projectData.json'
 import fiveAll from '../fiveData/fiveall.json'
+import enterpriseAll from '../fiveData/enterpriseAll.json'
+import enterprise from '../fiveData/enterprise.json'
 export default {
     data(){
         return{
@@ -522,7 +521,7 @@ export default {
             console.log(params)
             let total = [102.3,20.8,38.6,85.6,65.1,21.5,98.5,581.95]
             this.totalValue = total[params-1]
-            let arr = [algorithm,idCard,model,terminal,system,network,platform,parkList]
+            let arr = [algorithm,idCard,model,terminal,system,network,platform,enterpriseAll]
             this.map.getSource('earthquakes').setData(arr[params-1])
         },
         // 获取雷达图
@@ -547,7 +546,7 @@ export default {
                         }
                     },
                     indicator: [
-                        { name: '算法', max: 6500},
+                        { name: '算法', max: 36500},
                         { name: '芯片', max: 16000},
                         { name: '模块', max: 30000},
                         { name: '终端', max: 38000},
@@ -587,7 +586,7 @@ export default {
                     }},
                     data : [
                         {
-                            value : [4300, 10000, 28000, 35000, 50000, 19000, 5200],
+                            value : [14300, 10000, 28000, 35000, 50000, 19000, 5200],
                             name : '从业人数',
                             itemStyle:{
                                 normal:{
@@ -985,7 +984,7 @@ export default {
             if (!this.map.getSource('earthquakes')){
                 this.map.addSource('earthquakes', {
                     "type": "geojson",
-                    "data": fiveAll,
+                    "data": enterpriseAll,
                     "cluster": false,
                     "clusterRadius": 80,
                     "clusterProperties": { // keep separate counts for each magnitude category in a cluster
@@ -1138,8 +1137,9 @@ export default {
             if (features.length > 0){
                 const enterList = JSON.parse(features[0].properties.test)
                 console.log(enterList)
-                this.enterpriseList = JSON.parse(features[0].properties.test)
-                this.getQichachaData(this.enterpriseList[0].enterpriseName)
+                // this.enterpriseList = JSON.parse(features[0].properties.test)
+                this.enterpriseList = enterprise
+                this.getQichachaData(this.enterpriseList[0].company)
             }
             setTimeout(()=>{
                 this.getSomeOneRadarEnterprise()

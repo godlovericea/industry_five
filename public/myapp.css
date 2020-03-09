@@ -224,7 +224,7 @@
 }
 .enterpriseDetail{
     margin-top: 20px;
-    display: flex;
+    /* display: flex; */
     color: #ffffff;
 }
 .detailBox{

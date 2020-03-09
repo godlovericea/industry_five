@@ -85,8 +85,8 @@ export default {
                     }},
                     data : [
                         {
-                            value : [90, 0, 50, 70, 50, 70, 20],
-                            name : '从业人数',
+                            value : [90, 60, 50, 70, 50, 70, 80],
+                            name : '能力占比',
                             itemStyle:{
                                 normal:{
                                     color: "#1087F6", // 图表中各个图区域的颜色
