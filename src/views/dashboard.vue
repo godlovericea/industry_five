@@ -8,7 +8,7 @@
             <span class="switchTitle">卫星影像</span><el-switch v-model="switchMap" active-color="#13ce66" inactive-color="#ff4949" @change="setMapTheme"></el-switch>
         </div>
         <div class="bottomBox">
-            <div v-for="item in navBarList" :key="item.id" :class="[isClick === item.id ? 'activeitemsNav' : 'itemsNav']" @click="getItemData(item.id)">
+            <div v-for="item in navBarList" :key="item.id" :class="[isClick === item.id ? 'activeitemsNav' : 'itemsNav']" @click="getPrivinceData(item.name,item.id)">
                 <i :class="item.icon"></i>
                 <p class="name">{{item.name}}</p>
             </div>
@@ -191,8 +191,8 @@
                                 </div>
                                 <p class="tagTitle">联系方式：</p>
                                 <div class="tagCintent">
-                                    <p>邮箱：<span class="secondSpan">{{ContactInfo.Email}}</span></p>
-                                    <p>电话：<span class="secondSpan">{{ContactInfo.PhoneNumber}}</span></p>
+                                    <p>地址：<span class="secondSpan">{{ContactInfo.adress}}</span></p>
+                                    <!-- <p>电话：<span class="secondSpan">{{ContactInfo.PhoneNumber}}</span></p> -->
                                 </div>
                             </div>
                        </div>
@@ -511,9 +511,35 @@ export default {
                 pitch:60,
                 bearing:-0.03
             })
+            // this.map.getSource('earthquakes').setData(enterpriseAll)
             this.map.on("styledata", ()=>{
                 this.getAllDistribute();
                 this.getQixiaDistribute();
+                
+            })
+        },
+        getPrivinceData(name,id){
+            this.isClick = id
+            if(name === '全部'){
+                this.map.getSource('earthquakes').setData(enterpriseAll)
+                return false
+            }
+            let templ = {
+                "type": "FeatureCollection",
+                "crs": {
+                    "type": "name",
+                    "properties": {
+                        "name": "urn:ogc:def:crs:OGC:1.3:CRS84"
+                    }
+                },
+                "features":[]
+            }
+            axios.post('http://120.55.161.93:6011//city/getCityByElements?elements='+name)
+            .then(res=>{
+                if(res.data.code === 200){
+                    templ.features = res.data.result
+                    this.map.getSource('earthquakes').setData(templ)
+                }
             })
         },
         getItemData(params){
@@ -1035,15 +1061,20 @@ export default {
                     }
                 });
             }
-            
+            // console.log("data没有进来了")
             this.map.on('data', (e)=> {
-                if (e.sourceId !== 'earthquakes' || !e.isSourceLoaded) {
-                    return;
-                }
-                this.map.on('move', this.updateMarkers);
-                this.map.on('moveend',this.updateMarkers);
-                this.map.on('click','earthquake_label',this.handleMarkerClick);
-                this.updateMarkers();
+                // console.log("data进来了")
+                // console.log(e)
+                // if (e.sourceId !== 'earthquakes' || !e.isSourceLoaded) {
+                //     return;
+                // }
+                // this.map.on('move', this.updateMarkers);
+                // this.map.on('moveend',this.updateMarkers);
+                
+                this.map.on('click','earthquake_circle',this.handleMarkerClick);
+                
+                // console.log("123")
+                // this.updateMarkers();
             });
         },
         updateMarkers() {
@@ -1124,26 +1155,27 @@ export default {
             '" fill="' + color + '" />'].join(' ');
         },
         handleMarkerClick(e){
-            // console.log(e);
-            setTimeout(()=>{
+            console.log(e);
+            // setTimeout(()=>{
                 this.enterpriseFlag = true
-            })
+            // })
             
-            const map = e.target;
+            // const map = e.target;
             // console.log(map);
-            const features = map.queryRenderedFeatures(e.point,  { layers: ['earthquake_label'] });
+            const features = this.map.queryRenderedFeatures(e.point,  { layers: ['earthquake_circle'] });
             console.log(features);
             this.parkName = features[0].properties.id
             if (features.length > 0){
                 const enterList = JSON.parse(features[0].properties.test)
                 console.log(enterList)
                 // this.enterpriseList = JSON.parse(features[0].properties.test)
-                this.enterpriseList = enterprise
-                this.getQichachaData(this.enterpriseList[0].company)
+                this.enterpriseList = enterList
+                this.getQichachaData(this.enterpriseList[0].company) 
             }
             setTimeout(()=>{
-                this.getSomeOneRadarEnterprise()
-                
+                if(document.getElementById(this.radar)){
+                    this.getSomeOneRadarEnterprise()
+                }
             },2000)
             
         },
@@ -1653,23 +1685,28 @@ export default {
             });
         },
         getQichachaData(name){
-            axios.post('http://120.55.161.93:6011/qichacha/industryDetail?name='+name)
+            axios.post('http://121.199.8.188:6011/qichacha/industryDetail?name='+name)
             .then(res=>{
-                // console.log(res.data.Result)
-                let myData = JSON.parse(res.data.result.content)
-                 console.log(myData)
-                 console.log("789poi")
-                this.CompanyProducts = myData.Result.CompanyProducts
-                this.Employees = myData.Result.Employees
-                this.Industry = myData.Result.Industry
-                this.Partners = myData.Result.Partners
-                this.ScopeIn = myData.Result.Scope
-                this.legalPerson = myData.Result.OperName
-                this.ContactInfo = myData.Result.ContactInfo
-                axios.post("http://120.55.161.93:6011/qichacha/getPatentCount?name="+name)
-                .then(res=>{
-                    this.knowledge = res.data.result
-                })
+                if(res.data.result && res.data.code === 200){
+                    // console.log(res.data.Result)
+                    let myData = res.data.result
+                    // console.log(myData)
+                    // console.log("789poi")
+                    // this.CompanyProducts = myData.Result.CompanyProducts
+                    this.Employees = myData.Result.Employees
+                    this.Industry = myData.Result.Industry
+                    this.Partners = myData.Result.Partners
+                    this.ScopeIn = myData.Result.Scope
+                    this.legalPerson = myData.Result.OperName
+                    this.ContactInfo = {
+                        adress:myData.Result.Address,
+                        phone:myData.Result.Address,
+                    }
+                    axios.post("http://121.199.8.188:6011/qichacha/getPatentCount?name="+name)
+                    .then(res=>{
+                        this.knowledge = res.data.result
+                    })
+                }
             })
         },
         showInMapbox(params){
