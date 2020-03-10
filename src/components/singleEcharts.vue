@@ -21,7 +21,10 @@ export default {
     },
     methods:{
         getSomeOneRadarEnterprise(){
-            let myChart=echarts.init(document.getElementById(this.id))
+            
+                let myChart=echarts.init(document.getElementById(this.id))
+            
+            
             let option = {
                 // title: {
                 //     text: '南邮研究院',
