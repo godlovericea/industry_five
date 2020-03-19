@@ -280,6 +280,8 @@ import projectData from '../fiveData/projectData.json'
 import fiveAll from '../fiveData/fiveall.json'
 import enterpriseAll from '../fiveData/enterpriseAll.json'
 import enterprise from '../fiveData/enterprise.json'
+import jiangsusheng from '../cityJson/江苏省.json'
+import nanjingDis from '../cityJson/南京市.json'
 export default {
     data(){
         return{
@@ -366,21 +368,7 @@ export default {
                         name: "urn:ogc:def:crs:OGC:1.3:CRS84"
                     }
                 },
-                features: [{
-                    type: "Feature",
-                    properties: {
-                        id: "地理信息园",
-                        mag: 1,
-                        time: 1507425650893,
-                        felt: null,
-                        tsunami: 0,
-                        test:[]
-                    },
-                    geometry: {
-                        type: "Point",
-                        coordinates: [118.9196460753, 32.0805948414]
-                    }
-                }]
+                features: []
             },
             searchFlag:false,
             searchEnterprise:'',
@@ -513,32 +501,66 @@ export default {
             })
             // this.map.getSource('earthquakes').setData(enterpriseAll)
             this.map.on("styledata", ()=>{
-                this.getAllDistribute();
+                this.getPrivinceData('全部',8);
                 this.getQixiaDistribute();
                 
             })
         },
         getPrivinceData(name,id){
             this.isClick = id
-            if(name === '全部'){
-                this.map.getSource('earthquakes').setData(enterpriseAll)
-                return false
-            }
-            let templ = {
-                "type": "FeatureCollection",
-                "crs": {
-                    "type": "name",
-                    "properties": {
-                        "name": "urn:ogc:def:crs:OGC:1.3:CRS84"
-                    }
-                },
-                "features":[]
-            }
             axios.post('http://120.55.161.93:6011//city/getCityByElements?elements='+name)
             .then(res=>{
                 if(res.data.code === 200){
-                    templ.features = res.data.result
-                    this.map.getSource('earthquakes').setData(templ)
+                    this.searchReault.features = res.data.result
+                    // this.map.getSource('earthquakes').setData(this.searchReault)
+                    this.searchReault.features.forEach(marker => {
+                        var el = document.createElement("div");
+                        var txt = document.createElement("h1");
+                        txt.innerText = marker.properties.mag;
+                        el.appendChild(txt);
+                        let magNum = parseInt(marker.properties.mag)
+
+                        if(magNum< 9.5){
+                            el.style.backgroundImage = "url(" + require("../svg/icon-01.png") + ")";
+                        }else if(magNum > 9.5 && magNum <20.5){
+                            el.style.backgroundImage = "url(" + require("../svg/icon-02.png") + ")";
+                        }else if(magNum > 20.5 && magNum <30.5){
+                            el.style.backgroundImage ="url(" + require("../svg/icon-03.png") + ")";
+                        }else if(magNum > 30.5 && magNum <40.5){
+                            el.style.backgroundImage = "url(" + require("../svg/icon-04.png") + ")";
+                        }else if(magNum > 50.5 && magNum <60.5){
+                            el.style.backgroundImage = "url(" + require("../svg/icon-05.png") + ")";
+                        }else{
+                            el.style.backgroundImage = "url(" + require("../svg/icon-06.png") + ")";
+                        }
+                        el.className = "marker";
+                        
+                        el.style.width = "43px";
+                        el.style.height = "53px";
+                        
+                        el.addEventListener("click", ()=> {
+                            // window.alert(marker.properties.id);
+                            this.enterpriseFlag = true
+                        
+                            
+                            this.parkName = marker.properties.id
+                            const enterList = marker.properties.test
+                            this.enterpriseList = enterList
+                            this.getQichachaData(this.enterpriseList[0].enterpriseName)
+                        
+                            setTimeout(()=>{
+                                if(document.getElementById(this.radar)){
+                                    this.getSomeOneRadarEnterprise()
+                                }
+                            },2000)
+
+                        });
+
+                        // add marker to map
+                        new mapboxgl.Marker(el)
+                            .setLngLat(marker.geometry.coordinates)
+                            .addTo(this.map);
+                    });
                 }
             })
         },
@@ -1187,10 +1209,11 @@ export default {
             this.elementsList = this.enterpriseList[this.activeIndex].elements.split(" ")
         },
         getQixiaDistribute(){
-            const dottedLine = mydottedLine
+            const dottedLine = jiangsusheng
             // console.log("123")
             if(!this.map.getSource('dottedlines_label')){
-                this.map.addSource('dottedlines_label',dottedLine);
+                this.map.addSource('dottedlines_label',jiangsusheng);
+                // this.map.addSource('dottedlines_label_nj',nanjingDis);
             }else{
                 return false
             }
@@ -1199,14 +1222,44 @@ export default {
             // if (!this.map.getLayer('qixiaDis')){
                 this.map.addLayer({
                     'id': 'qixiaDis',
+                    'type': 'fill',
+                    'source':'dottedlines_label',
+                    'paint': {
+                        "fill-color":"#ffffff",
+                        "fill-opacity":0.05,
+                    }
+                });
+                this.map.addLayer({
+                    'id': 'qixiaDisline',
                     'type': 'line',
                     'source':'dottedlines_label',
                     'paint': {
-                        'line-dasharray':[4,3],
-                        'line-width': 4,
-                        'line-color': ['get', 'color']
+                        'line-dasharray':[3,2],
+                        'line-width': 1.5,
+                        "line-opacity":1,
+                        'line-color': '#ffffff'
                     }
                 });
+                // this.map.addLayer({
+                //     'id': 'njDis',
+                //     'type': 'fill',
+                //     'source':'dottedlines_label_nj',
+                //     'paint': {
+                //         "fill-color":"#ffffff",
+                //         "fill-opacity":0.05,
+                //     }
+                // });
+                // this.map.addLayer({
+                //     'id': 'njDisline',
+                //     'type': 'line',
+                //     'source':'dottedlines_label_nj',
+                //     'paint': {
+                //         'line-dasharray':[3,2],
+                //         'line-width': 1.5,
+                //         "line-opacity":1,
+                //         'line-color': '#ffffff'
+                //     }
+                // });
             // }
         },
         setISP(){
@@ -1802,6 +1855,62 @@ export default {
         showImgBox(){
             // this.imgTitle = 
             this.imgDialogVisible = true
+        },
+        setAllDistribute(){
+           
+            // this.map.on("load",()=>{
+                
+                this.parkList.features.forEach(marker => {
+                    var el = document.createElement("div");
+                    var txt = document.createElement("h1");
+                    txt.innerText = marker.properties.mag;
+                    el.appendChild(txt);
+                    let magNum = parseInt(marker.properties.mag)
+
+                    if(magNum< 9.5){
+                        el.style.backgroundImage = "url(" + require("../svg/icon-01.png") + ")";
+                    }else if(magNum > 9.5 && magNum <20.5){
+                        el.style.backgroundImage = "url(" + require("../svg/icon-02.png") + ")";
+                    }else if(magNum > 20.5 && magNum <30.5){
+                        el.style.backgroundImage ="url(" + require("../svg/icon-03.png") + ")";
+                    }else if(magNum > 30.5 && magNum <40.5){
+                        el.style.backgroundImage = "url(" + require("../svg/icon-04.png") + ")";
+                    }else if(magNum > 50.5 && magNum <60.5){
+                        el.style.backgroundImage = "url(" + require("../svg/icon-05.png") + ")";
+                    }else{
+                        el.style.backgroundImage = "url(" + require("../svg/icon-06.png") + ")";
+                    }
+                    el.className = "marker";
+                    
+                    el.style.width = "43px";
+                    el.style.height = "53px";
+                    
+                    el.addEventListener("click", ()=> {
+                        // window.alert(marker.properties.id);
+                        this.enterpriseFlag = true
+                       
+                        
+                        this.parkName = marker.properties.id
+                        const enterList = marker.properties.test
+                        this.enterpriseList = enterList
+                         this.getQichachaData(this.enterpriseList[0].enterpriseName)
+                       
+                        setTimeout(()=>{
+                            if(document.getElementById(this.radar)){
+                                this.getSomeOneRadarEnterprise()
+                            }
+                        },2000)
+
+                    });
+
+                    // add marker to map
+                    new mapboxgl.Marker(el)
+                        .setLngLat(marker.geometry.coordinates)
+                        .addTo(this.map);
+                });
+            // })
+            
+
         }
     }
 }
