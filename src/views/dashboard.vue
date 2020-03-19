@@ -42,8 +42,8 @@
                 <div class="btnGroups">
                     <md-tabs @md-changed="getScenList" md-alignment="fixed">
                         <md-tab class="movies" id="0" md-label="疫情防控">
-                            <div class="cardBox" v-for="(item,index) in virusList" :key="index" @click="clusterMapDis">
-                                <div>
+                            <div class="cardBox" v-for="(item,index) in sceanList" :key="index" @click="clusterMapDis">
+                                <div v-if="item.sceneClassification == '4'">
                                     <div class="cardContent">
                                         <p class="cardTitle">{{item.scene}}</p>
                                         <p class="cardDetail">{{item.scenarioDefined}}</p>
@@ -98,15 +98,15 @@
             </div>
             <div class="divider"></div>
             <div class="sceanBox">
-                <p class="stepsTitle">① 定义如下:</p>
+                <p class="stepsTitle">① 场景描述:</p>
                 <div class="stepsContent">
                     <p class="stepsDetail">{{sceanData.scenarioDefined}}</p>
                 </div>
-                <p class="stepsTitle">② 图片介绍:</p>
+                <p class="stepsTitle">② 图片和视频介绍:</p>
                 <div class="stepsContent">
                     <!-- <img class="shortcut" v-for="(item,index) in companySceneImgDTOList" :key="index" :src="item.scenarioImg" alt=""> -->
                     <el-image 
-                        style="width: 100px; height: 100px"
+                        style="width: 200px; height: 120px"
                         :src="url" 
                         :preview-src-list="srcList">
                     </el-image>
@@ -118,11 +118,12 @@
                             </el-popover>
                         </el-carousel-item>
                     </el-carousel> -->
-                </div>
-                <p class="stepsTitle">③ 视频介绍:</p>
-                <div class="stepsContent">
                     <video class="myVideo" :src="videoUrl" controls></video>
                 </div>
+                <!-- <p class="stepsTitle">③ 视频介绍:</p>
+                <div class="stepsContent">
+                    <video class="myVideo" :src="videoUrl" controls></video>
+                </div> -->
                 <p class="stepsTitle">④ 关联企业:</p>
                 <div class="stepsContent">
                     <div class="sceanEnterBox">
@@ -431,7 +432,7 @@ export default {
         this.getRadarEnterprise()
         this.getOutputValue()
         this.getEnterpriseMode()
-        this.getScenList(1)
+        this.getScenList(4)
     },
     methods:{
         checkBrowserVersion(){
@@ -1792,7 +1793,13 @@ export default {
             }
         },
         getScenList(params){
-            axios.post('http://120.55.161.93:6011/companyInfo/listAllCompanyScene?type='+params)
+            let type = 4
+            if(params == 0){
+                type = 4
+            }else{
+                type = params
+            }
+            axios.post('http://120.55.161.93:6011/companyInfo/listAllCompanyScene?type='+type)
             .then(res=>{
                 // console.log(res)
                 this.sceanList = res.data.result
