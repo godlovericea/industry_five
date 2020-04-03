@@ -15,11 +15,11 @@
         </div>
         <div class="leftBox">
             <div class="leftItemsBox">
-                <div class="leftheaderBox">
+                <!-- <div class="leftheaderBox">
                     <p class="headerTitle">行业从业人数分布</p>
-                </div>
-                <div class="etitle">从业人数:161500人</div>
-                <div id="enterprise"></div>
+                </div> -->
+                <!-- <div class="etitle">从业人数:161500人</div> -->
+                <!-- <div id="enterprise"></div> -->
             </div>
             <div class="leftItemsBox">
                 <div class="leftheaderBox">
@@ -30,7 +30,7 @@
                 <div id="modelll"></div>
             </div>
         </div>
-        <div class="rightBox">
+        <!-- <div class="rightBox">
             <el-input v-model="search" placeholder="请输入企业名称或企业类型" @input="getSearchResult">
                 <el-button slot="append" icon="el-icon-search" @click="getSearchResult"></el-button>
             </el-input>
@@ -90,7 +90,7 @@
                     </md-tabs>
                 </div>
             </div>
-        </div>
+        </div> -->
         <div class="sceanDetailDialog" v-if="sceanFlag">
             <div class="sceanDialogHeader">
                 <p class="dialogTitle">{{sceanData.scene}}</p>
@@ -429,7 +429,7 @@ export default {
     mounted(){
         this.checkBrowserVersion()
         this.initMap()
-        this.getRadarEnterprise()
+        // this.getRadarEnterprise()
         this.getOutputValue()
         this.getEnterpriseMode()
         this.getScenList(4)
@@ -496,7 +496,7 @@ export default {
                 container: 'map',
                 style: 'http://106.15.47.224:8688/styles/newblue/style.json',
                 center: [119.8526,32.910144],
-                zoom: 6.5,
+                zoom: 7.5,
                 pitch:60,
                 bearing:-0.03
             })
