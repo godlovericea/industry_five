@@ -15,33 +15,32 @@
         </div>
         <div class="leftBox">
             <div class="leftItemsBox">
-                <!-- <div class="leftheaderBox">
-                    <p class="headerTitle">行业从业人数分布</p>
-                </div> -->
-                <!-- <div class="etitle">从业人数:161500人</div> -->
-                <!-- <div id="enterprise"></div> -->
+                <div class="leftheaderBox">
+                    <p class="headerTitle">企业数量</p>
+                </div>
+                <div class="etitle">总数:369家</div>
+                <div id="outputValue"></div>
             </div>
             <div class="leftItemsBox">
                 <div class="leftheaderBox">
-                    <p class="headerTitle">企业数量及产业规模</p>
+                    <p class="headerTitle">产业规模</p>
                 </div>
-                <div class="etitle">总数:248家，总产值：{{totalValue}}亿元</div>
-                <div id="outputValue"></div>
+                <div class="etitle">总产值：{{totalValue}}亿元</div>
                 <div id="modelll"></div>
             </div>
         </div>
-        <!-- <div class="rightBox">
-            <el-input v-model="search" placeholder="请输入企业名称或企业类型" @input="getSearchResult">
+        <div class="rightBox">
+            <!-- <el-input v-model="search" placeholder="请输入企业名称或企业类型" @input="getSearchResult">
                 <el-button slot="append" icon="el-icon-search" @click="getSearchResult"></el-button>
-            </el-input>
-            <div style="height:20px"></div>
+            </el-input> -->
+            <!-- <div style="height:20px"></div> -->
             <div class="leftheaderBox">
-                <p class="headerTitle">江苏省5G产业联盟应用场景</p>
+                <p class="headerTitle">江苏省5G产业联盟产业链分布</p>
             </div>
             <div class="content">
                 <div class="btnGroups">
                     <md-tabs @md-changed="getScenList" md-alignment="fixed">
-                        <md-tab class="movies" id="0" md-label="疫情防控">
+                        <!-- <md-tab class="movies" id="0" md-label="疫情防控">
                             <div class="cardBox" v-for="(item,index) in sceanList" :key="index" @click="clusterMapDis">
                                 <div v-if="item.sceneClassification == '4'">
                                     <div class="cardContent">
@@ -51,8 +50,8 @@
                                     </div>
                                 </div>
                             </div>
-                        </md-tab>
-                        <md-tab class="movies" id="1" md-label="智慧政务">
+                        </md-tab> -->
+                        <md-tab class="movies" id="1" md-label="上游产业链">
                             <div class="cardBox" v-for="(item,index) in sceanList" :key="index" @click="clusterMapDis">
                                 <div v-if="item.sceneClassification == '1'">
                                     <div class="cardContent">
@@ -64,7 +63,7 @@
                             </div>
                         </md-tab>
 
-                        <md-tab id="2" class="movies" md-label="智慧民生">
+                        <md-tab id="2" class="movies" md-label="中游产业链">
                             <div class="cardBox" v-for="(item,index) in sceanList" :key="index" @click="clusterMapDis">
                                 <div v-if="item.sceneClassification == '2'">
                                     <div class="cardContent">
@@ -76,7 +75,7 @@
                             </div>
                         </md-tab>
 
-                        <md-tab id="3" class="movies" md-label="智慧产业">
+                        <md-tab id="3" class="movies" md-label="下游产业链">
                             <div class="cardBox" v-for="(item,index) in sceanList" :key="index" @click="clusterMapDis">
                                 <div v-if="item.sceneClassification == '3'">
                                     <div class="cardContent">
@@ -90,7 +89,7 @@
                     </md-tabs>
                 </div>
             </div>
-        </div> -->
+        </div>
         <div class="sceanDetailDialog" v-if="sceanFlag">
             <div class="sceanDialogHeader">
                 <p class="dialogTitle">{{sceanData.scene}}</p>
@@ -861,7 +860,7 @@ export default {
                 },
                 series: [
                     {
-                        name:'产值',
+                        name:'数量',
                         type:'pie',
                         center:['40%','50%'],
                         radius: ['50%', '70%'],
@@ -885,7 +884,7 @@ export default {
                             }
                         },
                         data:[
-                            {value:1548, name:'算法',itemStyle:{
+                            {value:348, name:'算法',itemStyle:{
                                 color:'#F2F16E'
                             }},
                             {value:310, name:'芯片',itemStyle:{
@@ -897,13 +896,13 @@ export default {
                             {value:135, name:'终端',itemStyle:{
                                 color:'#CC496D'
                             }},
-                            {value:1548, name:'系统',itemStyle:{
+                            {value:205, name:'系统',itemStyle:{
                                 color:'#BC808B'
                             }},
-                            {value:1048, name:'网络',itemStyle:{
+                            {value:348, name:'网络',itemStyle:{
                                 color:'#1679D4'
                             }},
-                            {value:1288, name:'平台',itemStyle:{
+                            {value:288, name:'平台',itemStyle:{
                                 color:'#86E07E'
                             }},
                         ]
