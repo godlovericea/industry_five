@@ -103,6 +103,9 @@
     color: #ffffff;
     padding: 10px;
     border-radius: 5px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 .carImg{
     height: 100px;
@@ -116,8 +119,9 @@
     color: #ffffff;
 }
 .cardDetail{
-    color: #A2C0EA;
+    color: #ffffff;
     max-height: 40px;
+    font-size: 20px;
     overflow: hidden;
 }
 .btnBox{

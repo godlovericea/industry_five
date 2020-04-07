@@ -51,39 +51,39 @@
                                 </div>
                             </div>
                         </md-tab> -->
-                        <md-tab class="movies" id="1" md-label="上游产业链">
-                            <div class="cardBox" v-for="(item,index) in sceanList" :key="index" @click="clusterMapDis">
-                                <div v-if="item.sceneClassification == '1'">
+                        <md-tab class="movies" id="上游产业链" md-label="上游产业链">
+                            <div class="cardBox" v-for="(item,index) in sceanList" :key="index" @click="clusterMapDis(item.name)">
+                                <!-- <div v-if="item.sceneClassification == '1'"> -->
                                     <div class="cardContent">
-                                        <p class="cardTitle">{{item.scene}}</p>
-                                        <p class="cardDetail">{{item.scenarioDefined}}</p>
-                                        <el-button type="text" style="color:'#ffffff'" @click="showDetail(item.sceneId,index)">查看更多>></el-button>
+                                        <p class="cardTitle">{{item.name}}</p>
+                                        <p class="cardDetail">{{item.num}}</p>
+                                        <!-- <el-button type="text" style="color:'#ffffff'" @click="showDetail(item.sceneId,index)">查看更多>></el-button> -->
                                     </div>
-                                </div>
+                                <!-- </div> -->
                             </div>
                         </md-tab>
 
-                        <md-tab id="2" class="movies" md-label="中游产业链">
-                            <div class="cardBox" v-for="(item,index) in sceanList" :key="index" @click="clusterMapDis">
-                                <div v-if="item.sceneClassification == '2'">
+                        <md-tab id="中游产业链" class="movies" md-label="中游产业链">
+                            <div class="cardBox" v-for="(item,index) in sceanList" :key="index" @click="clusterMapDis(item.name)">
+                                <!-- <div v-if="item.sceneClassification == '2'"> -->
                                     <div class="cardContent">
-                                        <p class="cardTitle">{{item.scene}}</p>
-                                        <p class="cardDetail">{{item.scenarioDefined}}</p>
-                                        <el-button type="text" style="color:'#ffffff'" @click="showDetail(item.sceneId,index)">查看更多>></el-button>
+                                        <p class="cardTitle">{{item.name}}</p>
+                                        <p class="cardDetail">{{item.num}}</p>
+                                        <!-- <el-button type="text" style="color:'#ffffff'" @click="showDetail(item.sceneId,index)">查看更多>></el-button> -->
                                     </div>
-                                </div>
+                                <!-- </div> -->
                             </div>
                         </md-tab>
 
-                        <md-tab id="3" class="movies" md-label="下游产业链">
-                            <div class="cardBox" v-for="(item,index) in sceanList" :key="index" @click="clusterMapDis">
-                                <div v-if="item.sceneClassification == '3'">
+                        <md-tab id="下游产业链" class="movies" md-label="下游产业链">
+                            <div class="cardBox" v-for="(item,index) in sceanList" :key="index" @click="clusterMapDis(item.name)">
+                                <!-- <div v-if="item.sceneClassification == '3'"> -->
                                     <div class="cardContent">
-                                        <p class="cardTitle">{{item.scene}}</p>
-                                        <p class="cardDetail">{{item.scenarioDefined}}</p>
-                                        <el-button type="text" style="color:'#ffffff'" @click="showDetail(item.sceneId,index)">查看更多>></el-button>
+                                        <p class="cardTitle">{{item.name}}</p>
+                                        <p class="cardDetail">{{item.num}}</p>
+                                        <!-- <el-button type="text" style="color:'#ffffff'" @click="showDetail(item.sceneId,index)">查看更多>></el-button> -->
                                     </div>
-                                </div>
+                                <!-- </div> -->
                             </div>
                         </md-tab>
                     </md-tabs>
@@ -419,7 +419,8 @@ export default {
                 sceneClassification: "2",
                 sceneId: 45,
                 video: "q3vbt7rr5.bkt.clouddn.com/images/tId=15826180570202020xgfyfk2.mp4"
-            }]
+            }],
+            newSceanListArr:[]
         }
     },
     components:{
@@ -431,7 +432,7 @@ export default {
         // this.getRadarEnterprise()
         this.getOutputValue()
         this.getEnterpriseMode()
-        this.getScenList(4)
+        this.getScenList("上游产业链")
     },
     methods:{
         checkBrowserVersion(){
@@ -508,7 +509,7 @@ export default {
         },
         getPrivinceData(name,id){
             this.isClick = id
-            axios.post('http://120.55.161.93:6011//city/getCityByElements?elements='+name)
+            axios.post('http://120.55.161.93:6011/city/getCompanyByElements?elements='+name)
             .then(res=>{
                 if(res.data.code === 200){
                     this.searchReault.features = res.data.result
@@ -930,9 +931,18 @@ export default {
             // console.log(this.searchReault.features[0].properties)
         },
         // 点击场景设置图层数据
-        clusterMapDis(){
+        clusterMapDis(name){
             
-            this.map.getSource('earthquakes').setData(smartGov)
+            // this.map.getSource('earthquakes').setData(smartGov)
+            this.newSceanListArr.forEach(l=>{
+                if(l.properties.id === name){
+                    this.map.flyTo({
+                        center:l.geometry.coordinates,
+                        zoom: 15
+                    })
+                }
+            })
+            
             
             // this.handleAnimateCircle()
         },
@@ -1738,7 +1748,7 @@ export default {
             });
         },
         getQichachaData(name){
-            axios.post('http://121.199.8.188:6011/qichacha/industryDetail?name='+name)
+            axios.post('http://120.55.161.93:6011/qichacha/industryDetail?name='+name)
             .then(res=>{
                 if(res.data.result && res.data.code === 200){
                     // console.log(res.data.Result)
@@ -1755,7 +1765,7 @@ export default {
                         adress:myData.Result.Address,
                         phone:myData.Result.Address,
                     }
-                    axios.post("http://121.199.8.188:6011/qichacha/getPatentCount?name="+name)
+                    axios.post("http://120.55.161.93:6011/qichacha/getPatentCount?name="+name)
                     .then(res=>{
                         this.knowledge = res.data.result
                     })
@@ -1792,16 +1802,21 @@ export default {
             }
         },
         getScenList(params){
-            let type = 4
-            if(params == 0){
-                type = 4
-            }else{
-                type = params
+            if(!params){
+                params = '上游产业链'
             }
-            axios.post('http://120.55.161.93:6011/companyInfo/listAllCompanyScene?type='+type)
+            // axios.post('http://120.55.161.93:6011/companyInfo/listAllCompanyScene?type='+type)
+            axios.post('http://120.55.161.93:6011/city/getCityByElements?elements='+params)
             .then(res=>{
                 // console.log(res)
-                this.sceanList = res.data.result
+                this.newSceanListArr = res.data.result
+                this.sceanList = []
+                res.data.result.forEach(l=>{
+                    this.sceanList.push({
+                        name:l.properties.id,
+                        num:l.properties.mag
+                    })
+                })
             })
         },
         showDetail(params,index){
@@ -1845,7 +1860,7 @@ export default {
             if(myIndex >4){
                 myIndex = 2
             }
-            axios.post('http://121.199.8.188:6011/city/getCompanyByScene?scene='+myIndex)
+            axios.post('http://120.55.161.93:6011/city/getCompanyByScene?scene='+myIndex)
             .then(res=>{
                 if(res.data.code===200){
                     console.log(res.data.result)
