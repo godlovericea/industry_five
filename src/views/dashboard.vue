@@ -14,13 +14,13 @@
             </div>
         </div>
         <div class="leftBox">
-            <div class="leftItemsBox">
+            <!-- <div class="leftItemsBox">
                 <div class="leftheaderBox">
                     <p class="headerTitle">企业数量</p>
                 </div>
                 <div class="etitle">总数:369家</div>
                 <div id="outputValue"></div>
-            </div>
+            </div> -->
             <div class="leftItemsBox">
                 <div class="leftheaderBox">
                     <p class="headerTitle">产业规模</p>
@@ -29,18 +29,18 @@
                 <div id="modelll"></div>
             </div>
         </div>
-        <div class="rightBox">
-            <!-- <el-input v-model="search" placeholder="请输入企业名称或企业类型" @input="getSearchResult">
+        <!-- <div class="rightBox">
+            <el-input v-model="search" placeholder="请输入企业名称或企业类型" @input="getSearchResult">
                 <el-button slot="append" icon="el-icon-search" @click="getSearchResult"></el-button>
-            </el-input> -->
-            <!-- <div style="height:20px"></div> -->
+            </el-input>
+            <div style="height:20px"></div>
             <div class="leftheaderBox">
                 <p class="headerTitle">江苏省5G产业联盟产业链分布</p>
             </div>
             <div class="content">
                 <div class="btnGroups">
                     <md-tabs @md-changed="getScenList" md-alignment="fixed">
-                        <!-- <md-tab class="movies" id="0" md-label="疫情防控">
+                        <md-tab class="movies" id="0" md-label="疫情防控">
                             <div class="cardBox" v-for="(item,index) in sceanList" :key="index" @click="clusterMapDis">
                                 <div v-if="item.sceneClassification == '4'">
                                     <div class="cardContent">
@@ -50,46 +50,46 @@
                                     </div>
                                 </div>
                             </div>
-                        </md-tab> -->
+                        </md-tab>
                         <md-tab class="movies" id="上游产业链" md-label="上游产业链">
                             <div class="cardBox" v-for="(item,index) in sceanList" :key="index" @click="clusterMapDis(item.name)">
-                                <!-- <div v-if="item.sceneClassification == '1'"> -->
+                                <div v-if="item.sceneClassification == '1'">
                                     <div class="cardContent">
                                         <p class="cardTitle">{{item.name}}</p>
                                         <p class="cardDetail">{{item.num}}</p>
-                                        <!-- <el-button type="text" style="color:'#ffffff'" @click="showDetail(item.sceneId,index)">查看更多>></el-button> -->
+                                        <el-button type="text" style="color:'#ffffff'" @click="showDetail(item.sceneId,index)">查看更多>></el-button>
                                     </div>
-                                <!-- </div> -->
+                                </div>
                             </div>
                         </md-tab>
 
                         <md-tab id="中游产业链" class="movies" md-label="中游产业链">
                             <div class="cardBox" v-for="(item,index) in sceanList" :key="index" @click="clusterMapDis(item.name)">
-                                <!-- <div v-if="item.sceneClassification == '2'"> -->
+                                <div v-if="item.sceneClassification == '2'">
                                     <div class="cardContent">
                                         <p class="cardTitle">{{item.name}}</p>
                                         <p class="cardDetail">{{item.num}}</p>
-                                        <!-- <el-button type="text" style="color:'#ffffff'" @click="showDetail(item.sceneId,index)">查看更多>></el-button> -->
+                                        <el-button type="text" style="color:'#ffffff'" @click="showDetail(item.sceneId,index)">查看更多>></el-button>
                                     </div>
-                                <!-- </div> -->
+                                </div>
                             </div>
                         </md-tab>
 
                         <md-tab id="下游产业链" class="movies" md-label="下游产业链">
                             <div class="cardBox" v-for="(item,index) in sceanList" :key="index" @click="clusterMapDis(item.name)">
-                                <!-- <div v-if="item.sceneClassification == '3'"> -->
+                                <div v-if="item.sceneClassification == '3'">
                                     <div class="cardContent">
                                         <p class="cardTitle">{{item.name}}</p>
                                         <p class="cardDetail">{{item.num}}</p>
-                                        <!-- <el-button type="text" style="color:'#ffffff'" @click="showDetail(item.sceneId,index)">查看更多>></el-button> -->
+                                        <el-button type="text" style="color:'#ffffff'" @click="showDetail(item.sceneId,index)">查看更多>></el-button>
                                     </div>
-                                <!-- </div> -->
+                                </div>
                             </div>
                         </md-tab>
                     </md-tabs>
                 </div>
             </div>
-        </div>
+        </div> -->
         <div class="sceanDetailDialog" v-if="sceanFlag">
             <div class="sceanDialogHeader">
                 <p class="dialogTitle">{{sceanData.scene}}</p>
@@ -430,9 +430,9 @@ export default {
         this.checkBrowserVersion()
         this.initMap()
         // this.getRadarEnterprise()
-        this.getOutputValue()
+        // this.getOutputValue()
         this.getEnterpriseMode()
-        this.getScenList("上游产业链")
+        // this.getScenList("上游产业链")
     },
     methods:{
         checkBrowserVersion(){
