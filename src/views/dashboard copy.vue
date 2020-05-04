@@ -8,7 +8,7 @@
             <span class="switchTitle">卫星影像</span><el-switch v-model="switchMap" active-color="#13ce66" inactive-color="#ff4949" @change="setMapTheme"></el-switch>
         </div>
         <div class="bottomBox">
-            <div v-for="item in navBarList" :key="item.id" :class="[isClick === item.id ? 'activeitemsNav' : 'itemsNav']" @click="getPrivinceData(item.id)">
+            <div v-for="item in navBarList" :key="item.id" :class="[isClick === item.id ? 'activeitemsNav' : 'itemsNav']" @click="getPrivinceData(item.name,item.id)">
                 <i :class="item.icon"></i>
                 <p class="name">{{item.name}}</p>
             </div>
@@ -30,41 +30,47 @@
             </div>
         </div>
         <div class="rightBox">
-            <el-input v-model="search" placeholder="请输入企业名称或项目名称" @input="getSearchResult">
+            <el-input v-model="search" placeholder="请输入企业名称或企业类型" @input="getSearchResult">
                 <el-button slot="append" icon="el-icon-search" @click="getSearchResult"></el-button>
             </el-input>
             <div style="height:20px"></div>
             <div class="leftheaderBox">
-                <p class="headerTitle">产业链分布</p>
+                <p class="headerTitle">江苏省5G产业联盟产业链分布</p>
             </div>
             <div class="content">
                 <div class="btnGroups">
                     <md-tabs @md-changed="getScenList" md-alignment="fixed">
-                        <md-tab class="movies" id="1" md-label="产品">
-                            <div class="cardBox" v-for="(item,index) in productList" :key="index" @click="clusterMapDis(item.name)">
-                                <div class="cardContent">
-                                    <p class="cardTitle">{{item.productName}}</p>
-                                    <p class="cardDetail">{{item.productIntroduce}}</p>
-                                    <el-button type="text" style="color:'#ffffff';text-align: right;" @click="showProductDetail(item)">查看更多>></el-button>
+                        <md-tab class="movies" id="上游产业链" md-label="上游产业链">
+                            <div class="cardBox" v-for="(item,index) in sceanList" :key="index" @click="clusterMapDis(item.name)">
+                                <div v-if="item.sceneClassification == '1'">
+                                    <div class="cardContent">
+                                        <p class="cardTitle">{{item.name}}</p>
+                                        <p class="cardDetail">{{item.num}}</p>
+                                        <el-button type="text" style="color:'#ffffff'" @click="showDetail(item.sceneId,index)">查看更多>></el-button>
+                                    </div>
                                 </div>
                             </div>
                         </md-tab>
 
-                        <md-tab id="2" class="movies" md-label="项目">
-                            <div class="cardBox" v-for="(item,index) in projectList" :key="index" @click="clusterMapDis(item.name)">
-                                <div class="cardContent">
-                                    <p class="cardTitle">{{item.name}}</p>
-                                    <p class="cardDetail">{{item.num}}</p>
-                                    <el-button type="text" style="color:'#ffffff';text-align: right;" @click="showProjectDetail(item)">查看更多>></el-button>
+                        <md-tab id="中游产业链" class="movies" md-label="中游产业链">
+                            <div class="cardBox" v-for="(item,index) in sceanList" :key="index" @click="clusterMapDis(item.name)">
+                                <div v-if="item.sceneClassification == '2'">
+                                    <div class="cardContent">
+                                        <p class="cardTitle">{{item.name}}</p>
+                                        <p class="cardDetail">{{item.num}}</p>
+                                        <el-button type="text" style="color:'#ffffff'" @click="showDetail(item.sceneId,index)">查看更多>></el-button>
+                                    </div>
                                 </div>
                             </div>
                         </md-tab>
-                        <md-tab id="3" class="movies" md-label="需求">
-                            <div class="cardBox" v-for="(item,index) in needList" :key="index" @click="clusterMapDis(item.name)">
-                                <div class="cardContent">
-                                    <p class="cardTitle">{{item.name}}</p>
-                                    <p class="cardDetail">{{item.num}}</p>
-                                    <el-button type="text" style="color:'#ffffff';text-align: right;" @click="showNeedDetail(item)">查看更多>></el-button>
+                        <md-tab id="下游产业链" class="movies" md-label="下游产业链">
+                            <div class="cardBox" v-for="(item,index) in sceanList" :key="index" @click="clusterMapDis(item.name)">
+                                <div v-if="item.sceneClassification == '3'">
+                                    <div class="cardContent">
+                                        <p class="cardTitle">{{item.name}}</p>
+                                        <p class="cardDetail">{{item.num}}</p>
+                                        <el-button type="text" style="color:'#ffffff'" @click="showDetail(item.sceneId,index)">查看更多>></el-button>
+                                    </div>
                                 </div>
                             </div>
                         </md-tab>
@@ -74,21 +80,21 @@
         </div>
         <div class="sceanDetailDialog" v-if="sceanFlag">
             <div class="sceanDialogHeader">
-                <p class="dialogTitle">{{sceanData.productName}}</p>
+                <p class="dialogTitle">{{sceanData.scene}}</p>
                 <i class="el-icon-close" @click="closeDialog"></i>
             </div>
             <div class="divider"></div>
             <div class="sceanBox">
-                <p class="stepsTitle">① 描述:</p>
+                <p class="stepsTitle">① 场景描述:</p>
                 <div class="stepsContent">
-                    <p class="stepsDetail">{{sceanData.productIntroduce}}</p>
+                    <p class="stepsDetail">{{sceanData.scenarioDefined}}</p>
                 </div>
                 <p class="stepsTitle">② 图片和视频介绍:</p>
                 <div class="stepsContent">
                     <!-- <img class="shortcut" v-for="(item,index) in companySceneImgDTOList" :key="index" :src="item.scenarioImg" alt=""> -->
                     <el-image 
                         style="width: 200px; height: 120px"
-                        :src="url"
+                        :src="url" 
                         :preview-src-list="srcList">
                     </el-image>
                     <!-- <el-carousel :interval="4000">
@@ -105,17 +111,17 @@
                 <div class="stepsContent">
                     <video class="myVideo" :src="videoUrl" controls></video>
                 </div> -->
-                <!-- <p class="stepsTitle">④ 关联企业:</p>
+                <p class="stepsTitle">④ 关联企业:</p>
                 <div class="stepsContent">
                     <div class="sceanEnterBox">
                         <div class="sceanEnterItems" v-for="item in officeList" :key="item.index" @click="showInMapbox(item.companyName)">
                             <p class="enterName">{{item.companyName}}</p>
                             <p class="enterP">项目:{{item.business}}</p>
-                            <p class="enterP">注册资金:{{item.registeredCapital}}万元</p>
-                            <p class="enterP">地址:{{item.area}}</p>
+                            <!-- <p class="enterP">注册资金:{{item.registeredCapital}}万元</p>
+                            <p class="enterP">地址:{{item.area}}</p> -->
                         </div>
                     </div>
-                </div> -->
+                </div>
             </div>
         </div>
         <div class="sceanDetailDialog" v-if="enterpriseFlag">
@@ -126,9 +132,9 @@
             <div class="divider"></div>
             <div class="enterpriseBox">
                 <el-tabs v-model="activeIndex" :tab-position="tabPosition" style="height: 200px;" :stretch="false" @tab-click="handleTabClick">
-                    <el-tab-pane  v-for="(item,index) in enterpriseList" :key="index" :label="item.comName">
+                    <el-tab-pane  v-for="(item,index) in enterpriseList" :key="index" :label="item.company">
                         <div class="enterpriseDetail">
-                            <!-- <singleEcharts :id="item.company"></singleEcharts> -->
+                            <singleEcharts :id="item.company"></singleEcharts>
                             <div class="detailBox">
                                 <p>主营：{{item.business}}</p>
                                 <p>2019收入：{{item.income}}万元</p>
@@ -180,6 +186,7 @@
                        </div>
                     </el-tab-pane>
                 </el-tabs>
+                
             </div>
         </div>
         <div class="sceanDetailDialog" v-if="searchFlag">
@@ -206,6 +213,7 @@
                        </div>
                     </el-tab-pane>
                 </el-tabs>
+                
             </div>
         </div>
         <el-dialog
@@ -255,11 +263,13 @@ import smartGov from '../assets/distributeFile/智慧政务.json'
 import echarts from 'echarts'
 import singleEcharts from '../components/singleEcharts'
 import axios from 'axios'
+import mydottedLine from '../fiveData/fivegData.json'
+import projectData from '../fiveData/projectData.json'
+import fiveAll from '../fiveData/fiveall.json'
 import enterpriseAll from '../fiveData/enterpriseAll.json'
 import enterprise from '../fiveData/enterprise.json'
 import jiangsusheng from '../cityJson/江苏省.json'
 import nanjingDis from '../cityJson/南京市.json'
-import {listBaseInfoByStream,listProductByStream,getCompanyDemand,getCompanyProject,getProduct} from '@/api/home'
 export default {
     data(){
         return{
@@ -269,27 +279,47 @@ export default {
             navBarList:[
                 {
                     id:1,
-                    name:'上游产业链',
+                    name:'算法',
                     icon:'iconfont icon-wangluo'
                 },
                 {
                     id:2,
-                    name:'中游产业链',
+                    name:'芯片',
                     icon:'iconfont icon-xinpian'
                 },
                 {
                     id:3,
-                    name:'下游产业链',
+                    name:'模块',
                     icon:'iconfont icon-modular'
                 },
                 {
                     id:4,
+                    name:'终端',
+                    icon:'iconfont icon-zhongduan'
+                },
+                {
+                    id:5,
+                    name:'系统',
+                    icon:'iconfont icon-xitong'
+                },
+                {
+                    id:6,
+                    name:'网络',
+                    icon:'iconfont icon-network'
+                },
+                {
+                    id:7,
+                    name:'平台',
+                    icon:'iconfont icon-pingtai'
+                },
+                {
+                    id:8,
                     name:'全部',
                     icon:'iconfont icon-quanbu'
                 },
 
             ],// 底部导航栏菜单
-            isClick:4,// 默认选择全部
+            isClick:8,// 默认选择全部
             search:'',//搜索框输入内容
             scean:1,//场景,
             sceanList:[],
@@ -315,75 +345,8 @@ export default {
                         name: "urn:ogc:def:crs:OGC:1.3:CRS84"
                     }
                 },
-                features:[]
+                features: []
             },
-            cityList:[
-                {
-                    id:1,
-                    city:'南京市',
-                    coordinates: [118.796539,32.058441]
-                },
-                {
-                    id:2,
-                    city:'无锡市',
-                    coordinates: [ 120.312332,31.491756]
-                },
-                {
-                    id:3,
-                    city:'徐州市',
-                    coordinates: [117.284042, 34.206741]
-                },
-                {
-                    id:4,
-                    city:'常州市',
-                    coordinates: [119.59794,31.72322]
-                },
-                {
-                    id:5,
-                    city:'苏州市',
-                    coordinates: [120.585297,31.29904]
-                },
-                {
-                    id:6,
-                    city:'南通市',
-                    coordinates: [120.894287,31.98078]
-                },
-                {
-                    id:7,
-                    city:'连云港市',
-                    coordinates: [119.1773,34.84065]
-                },
-                {
-                    id:8,
-                    city:'淮安市',
-                    coordinates: [119.021263,33.597507]
-                },
-                {
-                    id:9,
-                    city:'盐城市',
-                    coordinates: [120.50102,33.20107]
-                },
-                {
-                    id:10,
-                    city:'扬州市',
-                    coordinates: [119.43157,32.39463]
-                },
-                {
-                    id:11,
-                    city:'镇江市',
-                    coordinates: [119.43396,32.13188]
-                },
-                {
-                    id:12,
-                    city:'泰州市',
-                    coordinates: [119.922981,32.45615]
-                },
-                {
-                    id:13,
-                    city:'宿迁市',
-                    coordinates: [118.241703,33.964418]
-                }
-            ],
             searchFlag:false,
             searchEnterprise:'',
             enterprise:{},
@@ -405,10 +368,7 @@ export default {
             imgDialogVisible:false,
             url:'',
             srcList:[],
-            newSceanListArr:[],
-            productList:[],
-            projectList:[],
-            needList:[]
+            newSceanListArr:[]
         }
     },
     components:{
@@ -420,7 +380,7 @@ export default {
         // this.getRadarEnterprise()
         this.getOutputValue()
         this.getEnterpriseMode()
-        this.getScenList(1)
+        // this.getScenList("上游产业链")
     },
     methods:{
         checkBrowserVersion(){
@@ -459,24 +419,24 @@ export default {
             // if (Sys.ie == 9.0 || Sys.ie == 8.0 || Sys.ie == 7.0 || Sys.ie == 7.0){
             //     window.location.href="https://www.google.cn/chrome/"
             // }
-            // var Sys = {};  
-            // var ua = navigator.userAgent.toLowerCase();  
-            // var s;  
-            // (s = ua.match(/msie ([\d.]+)/)) ? Sys.ie = s[1] :  
-            // (s = ua.match(/firefox\/([\d.]+)/)) ? Sys.firefox = s[1] :  
-            // (s = ua.match(/chrome\/([\d.]+)/)) ? Sys.chrome = s[1] :  
-            // (s = ua.match(/opera.([\d.]+)/)) ? Sys.opera = s[1] :  
-            // (s = ua.match(/version\/([\d.]+).*safari/)) ? Sys.safari = s[1] : 0;  
-            // /*以下进行测试*/  
-            // if (Sys.ie) this.centerDialogVisible = true;  
-            // if (Sys.firefox) this.centerDialogVisible = false;  
-            // if (Sys.chrome) this.centerDialogVisible = false;  
-            // if (Sys.opera) this.centerDialogVisible = false;  
-            // if (Sys.safari) this.centerDialogVisible = false;  
-        
-            // if (Sys.ie == 9.0 || Sys.ie == 8.0 || Sys.ie == 7.0 || Sys.ie == 6.0){
-            //     window.location.href="https://www.google.cn/chrome/"
-            // }
+        // var Sys = {};  
+        // var ua = navigator.userAgent.toLowerCase();  
+        // var s;  
+        // (s = ua.match(/msie ([\d.]+)/)) ? Sys.ie = s[1] :  
+        // (s = ua.match(/firefox\/([\d.]+)/)) ? Sys.firefox = s[1] :  
+        // (s = ua.match(/chrome\/([\d.]+)/)) ? Sys.chrome = s[1] :  
+        // (s = ua.match(/opera.([\d.]+)/)) ? Sys.opera = s[1] :  
+        // (s = ua.match(/version\/([\d.]+).*safari/)) ? Sys.safari = s[1] : 0;  
+        // /*以下进行测试*/  
+        // if (Sys.ie) this.centerDialogVisible = true;  
+        // if (Sys.firefox) this.centerDialogVisible = false;  
+        // if (Sys.chrome) this.centerDialogVisible = false;  
+        // if (Sys.opera) this.centerDialogVisible = false;  
+        // if (Sys.safari) this.centerDialogVisible = false;  
+     
+        // if (Sys.ie == 9.0 || Sys.ie == 8.0 || Sys.ie == 7.0 || Sys.ie == 6.0){
+        //     window.location.href="https://www.google.cn/chrome/"
+        // }
         },
         initMap(){
             mapboxgl.accessToken = 'pk.eyJ1Ijoibnl5anl5YW5mYXBlbmciLCJhIjoiY2p3ajU4eXI2MGdxcDQ4cGI4cHI2bHhjcSJ9.m4FzyOH_5Yo3YVnroLxk-w';
@@ -490,44 +450,18 @@ export default {
             })
             // this.map.getSource('earthquakes').setData(enterpriseAll)
             this.map.on("styledata", ()=>{
-                this.getPrivinceData(4);
+                this.getPrivinceData('全部',8);
                 this.getQixiaDistribute();
                 
             })
         },
-        getPrivinceData(id){
+        getPrivinceData(name,id){
             this.isClick = id
-            // axios.post('http://120.55.161.93:6011/city/getCompanyByElements?elements='+name)
-            let myData = {
-                type:id,
-                // value:this.search
-                // value:
-            }
-            listBaseInfoByStream(myData)
+            axios.post('http://120.55.161.93:6011/city/getCompanyByElements?elements='+name)
             .then(res=>{
                 if(res.data.code === 200){
-                    let featureList = []
-                    res.data.result.forEach(l=>{
-                        featureList.push({
-                            "type": "Feature",
-                            "properties": {
-                                "id":l.id,
-                                "city":this.cityList[l.id - 1].city,
-                                "mag": l.mag,
-                                "time": 1507425650893,
-                                "felt": null,
-                                "tsunami": 0,
-                                "comList":l.comList
-                            },
-                            "geometry": {
-                                "type": "Point",
-                                "coordinates": this.cityList[l.id - 1].coordinates
-                            }
-                        })
-                    })
-                    
-                    this.searchReault.features = featureList
-         
+                    this.searchReault.features = res.data.result
+                    // this.map.getSource('earthquakes').setData(this.searchReault)
                     this.searchReault.features.forEach(marker => {
                         var el = document.createElement("div");
                         var txt = document.createElement("h1");
@@ -557,19 +491,35 @@ export default {
                             // window.alert(marker.properties.id);
                             this.enterpriseFlag = true
                         
-                            this.parkName = marker.properties.city
-                            const enterList = marker.properties.comList
+                            
+                            this.parkName = marker.properties.id
+                            const enterList = marker.properties.test
                             this.enterpriseList = enterList
-                            this.getQichachaData(this.enterpriseList[0].comName)
+                            this.getQichachaData(this.enterpriseList[0].enterpriseName)
+                        
+                            setTimeout(()=>{
+                                if(document.getElementById(this.radar)){
+                                    this.getSomeOneRadarEnterprise()
+                                }
+                            },2000)
+
                         });
+
                         // add marker to map
                         new mapboxgl.Marker(el)
                             .setLngLat(marker.geometry.coordinates)
                             .addTo(this.map);
                     });
-                    this.getScenList()
                 }
             })
+        },
+        getItemData(params){
+            this.isClick = params
+            console.log(params)
+            let total = [102.3,20.8,38.6,85.6,65.1,21.5,98.5,581.95]
+            this.totalValue = total[params-1]
+            let arr = [algorithm,idCard,model,terminal,system,network,platform,enterpriseAll]
+            this.map.getSource('earthquakes').setData(arr[params-1])
         },
         // 获取雷达图
         getRadarEnterprise(){
@@ -1033,11 +983,11 @@ export default {
             console.log(features);
             this.parkName = features[0].properties.id
             if (features.length > 0){
-                const enterList = JSON.parse(features[0].properties.comList)
+                const enterList = JSON.parse(features[0].properties.test)
                 console.log(enterList)
                 // this.enterpriseList = JSON.parse(features[0].properties.test)
                 this.enterpriseList = enterList
-                this.getQichachaData(this.enterpriseList[0].comName)
+                this.getQichachaData(this.enterpriseList[0].company) 
             }
             setTimeout(()=>{
                 if(document.getElementById(this.radar)){
@@ -1637,25 +1587,21 @@ export default {
             }
         },
         getScenList(params){
-            console.log(params)
-            let myParmas = 0
             if(!params){
-                myParmas = 1
-            }else{
-                myParmas = params
+                params = '上游产业链'
             }
-            let myData = {
-                "companyName": "",
-                "productName": "",
-                "productType": myParmas,
-                "type": this.isClick,
-            }
-            listProductByStream(myData)
+            // axios.post('http://120.55.161.93:6011/companyInfo/listAllCompanyScene?type='+type)
+            axios.post('http://120.55.161.93:6011/city/getCityByElements?elements='+params)
             .then(res=>{
                 // console.log(res)
-                this.productList = res.data.result.companyProductDTOList
-                this.projectList = res.data.result.companyProjectDTOList
-                this.needList = res.data.result.companyDemandDTOList
+                this.newSceanListArr = res.data.result
+                this.sceanList = []
+                res.data.result.forEach(l=>{
+                    this.sceanList.push({
+                        name:l.properties.id,
+                        num:l.properties.mag
+                    })
+                })
             })
         },
         showDetail(params,index){
@@ -1682,6 +1628,7 @@ export default {
                 // this.videoUrl =  'http://'+ res.data.result.video
                 this.videoUrl =  'http://qiniu.iwooke'+ res.data.result.video.substring(21)
             })
+            
             
             this.officeList =[]
             let templ = {
@@ -1710,37 +1657,6 @@ export default {
                     this.map.getSource('earthquakes').setData(templ)
                 }
             })
-        },
-        showProductDetail(params){
-            this.enterpriseFlag = false
-            console.log(params)
-            this.sceanFlag = true
-            let myData = {
-                companyProductId:params.companyProductId
-            }
-            getProduct(myData)
-            .then(res=>{
-                this.sceanData = res.data.result
-                this.srcList = []
-                res.data.result.imgList.forEach(l=>{
-                    l.imgUrl = 'http://qiniu.iwooke'+ l.imgUrl.substring(21)
-                    this.srcList.push(l.imgUrl)
-                })
-                this.url = this.srcList[0]
-            })
-
-        },
-        showProjectDetail(params){
-            this.enterpriseFlag = false
-            console.log(params)
-            this.sceanFlag = true
-            let id = parseInt(params)
-        },
-        showNeedDetail(params){
-            this.enterpriseFlag = false
-            console.log(params)
-            this.sceanFlag = true
-            let id = parseInt(params)
         },
         showImgBox(){
             // this.imgTitle = 
@@ -1855,7 +1771,7 @@ export default {
         flex-direction: column;
         justify-content: center;
         align-items: center;
-        width: 200px;
+        width: 80px;
         cursor: pointer;
     }
     .itemsNav i{
@@ -1864,7 +1780,7 @@ export default {
         margin-bottom: 10px;
     }
     .itemsNav .name{
-        color: #ffffff;
+       color: #ffffff;
         font-size: 20px;
         margin: 10px 0 0 0;
     }
@@ -1873,7 +1789,7 @@ export default {
         flex-direction: column;
         justify-content: center;
         align-items: center;
-        width: 200px;
+        width: 80px;
         cursor: pointer;
     }
     .activeitemsNav i{
