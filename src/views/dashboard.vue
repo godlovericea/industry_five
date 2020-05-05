@@ -53,8 +53,8 @@
                         <md-tab id="2" class="movies" md-label="项目">
                             <div class="cardBox" v-for="(item,index) in projectList" :key="index" @click="clusterMapDis(item.name)">
                                 <div class="cardContent">
-                                    <p class="cardTitle">{{item.name}}</p>
-                                    <p class="cardDetail">{{item.num}}</p>
+                                    <p class="cardTitle">{{item.projectName}}</p>
+                                    <p class="cardDetail">{{item.projectIntroduce}}</p>
                                     <el-button type="text" style="color:'#ffffff';text-align: right;" @click="showProjectDetail(item)">查看更多>></el-button>
                                 </div>
                             </div>
