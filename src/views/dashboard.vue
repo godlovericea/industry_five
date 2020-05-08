@@ -74,14 +74,14 @@
         </div>
         <div class="sceanDetailDialog" v-if="sceanFlag">
             <div class="sceanDialogHeader">
-                <p class="dialogTitle">{{sceanData.productName}}</p>
+                <p class="dialogTitle">{{sceanData.title}}</p>
                 <i class="el-icon-close" @click="closeDialog"></i>
             </div>
             <div class="divider"></div>
             <div class="sceanBox">
                 <p class="stepsTitle">① 描述:</p>
                 <div class="stepsContent">
-                    <p class="stepsDetail">{{sceanData.productIntroduce}}</p>
+                    <p class="stepsDetail">{{sceanData.info}}</p>
                 </div>
                 <p class="stepsTitle">② 图片和视频介绍:</p>
                 <div class="stepsContent">
@@ -1721,6 +1721,9 @@ export default {
             getProduct(myData)
             .then(res=>{
                 this.sceanData = res.data.result
+                this.sceanData.title = res.data.result.productName
+                this.sceanData.info = res.data.result.productIntroduce
+                
                 this.srcList = []
                 res.data.result.imgList.forEach(l=>{
                     l.imgUrl = 'http://qiniu.iwooke'+ l.imgUrl.substring(21)
@@ -1734,13 +1737,41 @@ export default {
             this.enterpriseFlag = false
             console.log(params)
             this.sceanFlag = true
-            let id = parseInt(params)
+            let myData = {
+                companyProjectId:params.companyProjectId
+            }
+            getCompanyProject(myData)
+            .then(res=>{
+                this.sceanData = res.data.result
+                this.sceanData.title = res.data.result.projectName
+                this.sceanData.info = res.data.result.projectIntroduce
+                this.srcList = []
+                res.data.result.imgList.forEach(l=>{
+                    l.imgUrl = 'http://qiniu.iwooke'+ l.imgUrl.substring(21)
+                    this.srcList.push(l.imgUrl)
+                })
+                this.url = this.srcList[0]
+            })
         },
         showNeedDetail(params){
             this.enterpriseFlag = false
             console.log(params)
             this.sceanFlag = true
-            let id = parseInt(params)
+            let myData = {
+                companyDemandId:params.companyDemandId
+            }
+            getCompanyDemand(myData)
+            .then(res=>{
+                this.sceanData = res.data.result
+                this.sceanData.title = res.data.result.projectName
+                this.sceanData.info = res.data.result.projectIntroduce
+                this.srcList = []
+                res.data.result.imgList.forEach(l=>{
+                    l.imgUrl = 'http://qiniu.iwooke'+ l.imgUrl.substring(21)
+                    this.srcList.push(l.imgUrl)
+                })
+                this.url = this.srcList[0]
+            })
         },
         showImgBox(){
             // this.imgTitle = 
