@@ -260,6 +260,7 @@ import enterprise from '../fiveData/enterprise.json'
 import jiangsusheng from '../cityJson/江苏省.json'
 import nanjingDis from '../cityJson/南京市.json'
 import {listBaseInfoByStream,listProductByStream,getCompanyDemand,getCompanyProject,getProduct} from '@/api/home'
+
 export default {
     data(){
         return{
@@ -315,7 +316,9 @@ export default {
                         name: "urn:ogc:def:crs:OGC:1.3:CRS84"
                     }
                 },
-                features:[]
+                features:[
+
+                ]
             },
             cityList:[
                 {
@@ -408,7 +411,10 @@ export default {
             newSceanListArr:[],
             productList:[],
             projectList:[],
-            needList:[]
+            needList:[],
+            marker:'',
+            markersList:[],
+            signmarker:''
         }
     },
     components:{
@@ -496,42 +502,39 @@ export default {
             })
         },
         getPrivinceData(id){
+            console.log(this.markersList)
+            if(this.markersList.length > 0){
+                this.markersList.forEach(el=>{
+                    console.log(el)
+                    el.addTo(this.map);
+                    console.log(el);
+                    el.remove();
+                    // el.getLngLat()
+                    // console.log(el.getLngLat())
+                    // var markers = new mapboxgl.Marker().addTo(this.map)
+                    // markers.remove()
+                });
+            };
+            this.markersList = [];
+            mapboxgl.clearStorage();
             this.isClick = id
-            // axios.post('http://120.55.161.93:6011/city/getCompanyByElements?elements='+name)
             let myData = {
-                type:id,
-                // value:this.search
-                // value:
+                type:id
             }
             listBaseInfoByStream(myData)
             .then(res=>{
                 if(res.data.code === 200){
-                    let featureList = []
-                    res.data.result.forEach(l=>{
-                        featureList.push({
-                            "type": "Feature",
-                            "properties": {
-                                "id":l.id,
-                                "city":this.cityList[l.id - 1].city,
-                                "mag": l.mag,
-                                "time": 1507425650893,
-                                "felt": null,
-                                "tsunami": 0,
-                                "comList":l.comList
-                            },
-                            "geometry": {
-                                "type": "Point",
-                                "coordinates": this.cityList[l.id - 1].coordinates
-                            }
-                        })
-                    })
-                    
-                    this.searchReault.features = featureList
-         
+                    this.markersList = []
+                    this.searchReault.features = res.data.result
+                    // let featureList = res.data.result
+                    // console.log(this.searchReault.features)
+                    console.log(this.searchReault.features);
                     this.searchReault.features.forEach(marker => {
+                        console.log(marker)
                         var el = document.createElement("div");
                         var txt = document.createElement("h1");
                         txt.innerText = marker.properties.mag;
+
                         el.appendChild(txt);
                         let magNum = parseInt(marker.properties.mag)
 
@@ -549,10 +552,8 @@ export default {
                             el.style.backgroundImage = "url(" + require("../svg/icon-06.png") + ")";
                         }
                         el.className = "marker";
-                        
                         el.style.width = "43px";
                         el.style.height = "53px";
-                        
                         el.addEventListener("click", ()=> {
                             // window.alert(marker.properties.id);
                             this.enterpriseFlag = true
@@ -563,9 +564,12 @@ export default {
                             this.getQichachaData(this.enterpriseList[0].comName)
                         });
                         // add marker to map
-                        new mapboxgl.Marker(el)
+                        var aMarker =  new mapboxgl.Marker(el)
                             .setLngLat(marker.geometry.coordinates)
                             .addTo(this.map);
+                        console.log(aMarker);
+                        this.markersList.push(aMarker);
+                        console.log(this.markersList);
                     });
                     this.getScenList()
                 }
@@ -666,7 +670,7 @@ export default {
                 },
                 xAxis: [{
                     type: 'category',
-                    data:['上游产业链','中游产业链','下游产业链'],
+                    data:['上游','中游','下游'],
                     axisLine: {
                         lineStyle: {
                             color: 'rgba(255,255,255,0.12)'
@@ -777,7 +781,7 @@ export default {
                     // x: 'right',
                     right:30,
                     top:10,
-                    data:['上游产业链','中游产业链','下游产业链'],
+                    data:['上游','中游','下游'],
                     textStyle:{
                         color:'#ffffff'
                     },
@@ -809,13 +813,13 @@ export default {
                             }
                         },
                         data:[
-                            {value:348, name:'上游产业链',itemStyle:{
+                            {value:348, name:'上游',itemStyle:{
                                 color:'#F2F16E'
                             }},
-                            {value:135, name:'中游产业链',itemStyle:{
+                            {value:135, name:'中游',itemStyle:{
                                 color:'#CC496D'
                             }},
-                            {value:348, name:'下游产业链',itemStyle:{
+                            {value:348, name:'下游',itemStyle:{
                                 color:'#1679D4'
                             }}
                         ]
@@ -1047,11 +1051,7 @@ export default {
             
         },
         handleTabClick(tab,event){
-            console.log(tab.label)
             this.getQichachaData(tab.label)
-            console.log(this.activeIndex)
-            console.log(this.enterpriseList[this.activeIndex].elements)
-            this.elementsList = this.enterpriseList[this.activeIndex].elements.split(" ")
         },
         getQixiaDistribute(){
             const dottedLine = jiangsusheng
@@ -1106,405 +1106,6 @@ export default {
                 //     }
                 // });
             // }
-        },
-        setISP(){
-            const ispdata = {
-                'type': 'geojson',
-                'data':{
-                    'type': 'FeatureCollection',
-                    "features": [
-                    {
-                    "type": "Feature",
-                    "properties": {
-                        "name": "兴智科技园",
-                        "height": 70,
-                        "base_height": ""
-                    },
-                    "geometry": {
-                        "coordinates": [
-                        [
-                            [
-                            118.872749,
-                            32.140334
-                            ],
-                            [
-                            118.872758,
-                            32.139775
-                            ],
-                            [
-                            118.873088,
-                            32.139779
-                            ],
-                            [
-                            118.873079,
-                            32.140349
-                            ],
-                            [
-                            118.872749,
-                            32.140334
-                            ]
-                        ]
-                        ],
-                        "type": "Polygon"
-                    },
-                    "id": "096fabce5b5ee9c7f1cccc2e12fc421d"
-                    },
-                    {
-                    "type": "Feature",
-                    "properties": {
-                        "name": "兴智科技园",
-                        "height": 50,
-                        "base_height": 0
-                    },
-                    "geometry": {
-                        "coordinates": [
-                        [
-                            [
-                            118.872854,
-                            32.139803
-                            ],
-                            [
-                            118.872854,
-                            32.139389
-                            ],
-                            [
-                            118.873072,
-                            32.13939
-                            ],
-                            [
-                            118.873072,
-                            32.139803
-                            ],
-                            [
-                            118.872854,
-                            32.139803
-                            ]
-                        ]
-                        ],
-                        "type": "Polygon"
-                    },
-                    "id": "0d185e5ee87a5e57aa10df913c14ecbd"
-                    },
-                    {
-                    "type": "Feature",
-                    "properties": {
-                        "name": "兴智科技园C幢",
-                        "height": 100,
-                        "base_height": ""
-                    },
-                    "geometry": {
-                        "coordinates": [
-                        [
-                            [
-                            118.873735,
-                            32.139139
-                            ],
-                            [
-                            118.8739,
-                            32.139139
-                            ],
-                            [
-                            118.873908,
-                            32.139182
-                            ],
-                            [
-                            118.874278,
-                            32.139184
-                            ],
-                            [
-                            118.874278,
-                            32.138948
-                            ],
-                            [
-                            118.874194,
-                            32.138945
-                            ],
-                            [
-                            118.87419,
-                            32.138903
-                            ],
-                            [
-                            118.873733,
-                            32.138897
-                            ],
-                            [
-                            118.873735,
-                            32.139139
-                            ]
-                        ]
-                        ],
-                        "type": "Polygon"
-                    },
-                    "id": "1ec3521eb9efe4a6c175c63b53e29958"
-                    },
-                    {
-                    "type": "Feature",
-                    "properties": {
-                        "name": "兴智科技园B幢楼顶",
-                        "height": 105,
-                        "base_height": 100
-                    },
-                    "geometry": {
-                        "coordinates": [
-                        [
-                            [
-                            118.873938,
-                            32.139668
-                            ],
-                            [
-                            118.87394,
-                            32.139584
-                            ],
-                            [
-                            118.874191,
-                            32.139589
-                            ],
-                            [
-                            118.87419,
-                            32.13967
-                            ],
-                            [
-                            118.874107,
-                            32.13967
-                            ],
-                            [
-                            118.874107,
-                            32.139684
-                            ],
-                            [
-                            118.874207,
-                            32.139684
-                            ],
-                            [
-                            118.874208,
-                            32.13957
-                            ],
-                            [
-                            118.873916,
-                            32.13957
-                            ],
-                            [
-                            118.873918,
-                            32.139685
-                            ],
-                            [
-                            118.874107,
-                            32.139684
-                            ],
-                            [
-                            118.874107,
-                            32.13967
-                            ],
-                            [
-                            118.873938,
-                            32.139668
-                            ]
-                        ]
-                        ],
-                        "type": "Polygon"
-                    },
-                    "id": "54ea6d428719b3e3a880bc6777482d5a"
-                    },
-                    {
-                    "type": "Feature",
-                    "properties": {
-                        "name": "兴智科技园A幢",
-                        "height": 100,
-                        "base_height": ""
-                    },
-                    "geometry": {
-                        "coordinates": [
-                        [
-                            [
-                            118.873268,
-                            32.140345
-                            ],
-                            [
-                            118.873905,
-                            32.140338
-                            ],
-                            [
-                            118.873906,
-                            32.140051
-                            ],
-                            [
-                            118.87327,
-                            32.140045
-                            ],
-                            [
-                            118.873268,
-                            32.140345
-                            ]
-                        ]
-                        ],
-                        "type": "Polygon"
-                    },
-                    "id": "5a53726126c1ce3723f937a816dc1c1f"
-                    },
-                    {
-                    "type": "Feature",
-                    "properties": {
-                        "name": "兴智科技园",
-                        "height": 50,
-                        "base_height": 35
-                    },
-                    "geometry": {
-                        "coordinates": [
-                        [
-                            [
-                            118.872858,
-                            32.139392
-                            ],
-                            [
-                            118.872855,
-                            32.1391
-                            ],
-                            [
-                            118.873079,
-                            32.139102
-                            ],
-                            [
-                            118.873072,
-                            32.139392
-                            ],
-                            [
-                            118.872858,
-                            32.139392
-                            ]
-                        ]
-                        ],
-                        "type": "Polygon"
-                    },
-                    "id": "5be2009f1b929486a37ff19d1066ec5a"
-                    },
-                    {
-                    "type": "Feature",
-                    "properties": {
-                        "name": "兴智科技园",
-                        "height": 50,
-                        "base_height": ""
-                    },
-                    "geometry": {
-                        "coordinates": [
-                        [
-                            [
-                            118.873081,
-                            32.138731
-                            ],
-                            [
-                            118.873898,
-                            32.138722
-                            ],
-                            [
-                            118.873899,
-                            32.138482
-                            ],
-                            [
-                            118.872861,
-                            32.138482
-                            ],
-                            [
-                            118.872856,
-                            32.139101
-                            ],
-                            [
-                            118.87308,
-                            32.139103
-                            ],
-                            [
-                            118.873081,
-                            32.138731
-                            ]
-                        ]
-                        ],
-                        "type": "Polygon"
-                    },
-                    "id": "6c2fbe718bf2f0f701b52728f666a2fa"
-                    },
-                    {
-                    "type": "Feature",
-                    "properties": {
-                        "name": "兴智科技园B幢",
-                        "height": 100,
-                        "base_height": 0
-                    },
-                    "geometry": {
-                        "coordinates": [
-                        [
-                            [
-                            118.873729,
-                            32.139718
-                            ],
-                            [
-                            118.873882,
-                            32.139719
-                            ],
-                            [
-                            118.873882,
-                            32.139758
-                            ],
-                            [
-                            118.874261,
-                            32.139753
-                            ],
-                            [
-                            118.874266,
-                            32.139532
-                            ],
-                            [
-                            118.87419,
-                            32.139529
-                            ],
-                            [
-                            118.874186,
-                            32.139485
-                            ],
-                            [
-                            118.873734,
-                            32.139484
-                            ],
-                            [
-                            118.873729,
-                            32.139718
-                            ]
-                        ]
-                        ],
-                        "type": "Polygon"
-                    },
-                    "id": "f031e8b126337465bc91c56aadc5eee0"
-                    }
-                ],
-                }
-            }
-            this.map.addSource('isp',ispdata);
-            this.map.addLayer({
-                'id': 'ispppp',
-                'type': 'fill-extrusion',
-                // 'source': {
-                //     // GeoJSON Data source used in vector tiles, documented at
-                //     // https://gist.github.com/ryanbaumann/a7d970386ce59d11c16278b90dde094d
-                //     'type': 'geojson',
-                //     'data': ispdata//'https://www.mapbox.com/mapbox-gl-js/assets/indoor-3d-map.geojson'
-                // },
-                source:ispdata,
-                'minzoom': 11,
-                'paint': {
-                    // See the Mapbox Style Specification for details on data expressions.
-                    // https://www.mapbox.com/mapbox-gl-js/style-spec/#expressions
-
-                    // Get the fill-extrusion-color from the source 'color' property.
-                    'fill-extrusion-color': '#89d3e6',//'#024c7c',//['get', 'color'],
-
-                    // Get fill-extrusion-height from the source 'height' property.
-                    'fill-extrusion-height': ['get', 'height'],
-
-                    // Get fill-extrusion-base from the source 'base_height' property.
-                    'fill-extrusion-base': ['get', 'base_height'],
-
-                    // Make extrusions slightly opaque for see through indoor walls.
-                    'fill-extrusion-opacity': 0.5
-                }
-            });
         },
         selectScean(params){
             this.scean = params
@@ -1637,7 +1238,7 @@ export default {
             }
         },
         getScenList(params){
-            console.log(params)
+            // console.log(params)
             let myParmas = 0
             if(!params){
                 myParmas = 1
@@ -1777,62 +1378,6 @@ export default {
             // this.imgTitle = 
             this.imgDialogVisible = true
         },
-        setAllDistribute(){
-           
-            // this.map.on("load",()=>{
-                
-                this.parkList.features.forEach(marker => {
-                    var el = document.createElement("div");
-                    var txt = document.createElement("h1");
-                    txt.innerText = marker.properties.mag;
-                    el.appendChild(txt);
-                    let magNum = parseInt(marker.properties.mag)
-
-                    if(magNum< 9.5){
-                        el.style.backgroundImage = "url(" + require("../svg/icon-01.png") + ")";
-                    }else if(magNum > 9.5 && magNum <20.5){
-                        el.style.backgroundImage = "url(" + require("../svg/icon-02.png") + ")";
-                    }else if(magNum > 20.5 && magNum <30.5){
-                        el.style.backgroundImage ="url(" + require("../svg/icon-03.png") + ")";
-                    }else if(magNum > 30.5 && magNum <40.5){
-                        el.style.backgroundImage = "url(" + require("../svg/icon-04.png") + ")";
-                    }else if(magNum > 50.5 && magNum <60.5){
-                        el.style.backgroundImage = "url(" + require("../svg/icon-05.png") + ")";
-                    }else{
-                        el.style.backgroundImage = "url(" + require("../svg/icon-06.png") + ")";
-                    }
-                    el.className = "marker";
-                    
-                    el.style.width = "43px";
-                    el.style.height = "53px";
-                    
-                    el.addEventListener("click", ()=> {
-                        // window.alert(marker.properties.id);
-                        this.enterpriseFlag = true
-                       
-                        
-                        this.parkName = marker.properties.id
-                        const enterList = marker.properties.test
-                        this.enterpriseList = enterList
-                         this.getQichachaData(this.enterpriseList[0].enterpriseName)
-                       
-                        setTimeout(()=>{
-                            if(document.getElementById(this.radar)){
-                                this.getSomeOneRadarEnterprise()
-                            }
-                        },2000)
-
-                    });
-
-                    // add marker to map
-                    new mapboxgl.Marker(el)
-                        .setLngLat(marker.geometry.coordinates)
-                        .addTo(this.map);
-                });
-            // })
-            
-
-        }
     }
 }
 </script>
