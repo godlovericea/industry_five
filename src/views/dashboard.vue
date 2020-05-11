@@ -62,8 +62,8 @@
                         <md-tab id="3" class="movies" md-label="需求">
                             <div class="cardBox" v-for="(item,index) in needList" :key="index" @click="clusterMapDis(item.name)">
                                 <div class="cardContent">
-                                    <p class="cardTitle">{{item.name}}</p>
-                                    <p class="cardDetail">{{item.num}}</p>
+                                    <p class="cardTitle">{{item.demandName}}</p>
+                                    <p class="cardDetail">{{item.demandIndo}}</p>
                                     <el-button type="text" style="color:'#ffffff';text-align: right;" @click="showNeedDetail(item)">查看更多>></el-button>
                                 </div>
                             </div>
@@ -99,12 +99,12 @@
                             </el-popover>
                         </el-carousel-item>
                     </el-carousel> -->
-                    <video class="myVideo" :src="videoUrl" controls></video>
+                    <!-- <video class="myVideo" :src="videoUrl" controls></video> -->
                 </div>
-                <!-- <p class="stepsTitle">③ 视频介绍:</p>
+                <p class="stepsTitle">③ 视频介绍:</p>
                 <div class="stepsContent">
                     <video class="myVideo" :src="videoUrl" controls></video>
-                </div> -->
+                </div>
                 <!-- <p class="stepsTitle">④ 关联企业:</p>
                 <div class="stepsContent">
                     <div class="sceanEnterBox">
@@ -1763,8 +1763,8 @@ export default {
             getCompanyDemand(myData)
             .then(res=>{
                 this.sceanData = res.data.result
-                this.sceanData.title = res.data.result.projectName
-                this.sceanData.info = res.data.result.projectIntroduce
+                this.sceanData.title = res.data.result.demandName
+                this.sceanData.info = res.data.result.demandIndo
                 this.srcList = []
                 res.data.result.imgList.forEach(l=>{
                     l.imgUrl = 'http://qiniu.iwooke'+ l.imgUrl.substring(21)
