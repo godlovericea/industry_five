@@ -12,13 +12,17 @@
                 <i :class="item.icon"></i>
                 <p class="name">{{item.name}}</p>
             </div>
+            <div>
+                <el-button size="small" @click="goLogin" v-if="!comName" type="primary" round>登录</el-button>
+                <span class="bottomNmae" v-if="comName">{{comName}}</span>
+            </div>
         </div>
         <div class="leftBox">
             <div class="leftItemsBox">
                 <div class="leftheaderBox">
                     <p class="headerTitle">企业数量</p>
                 </div>
-                <div class="etitle">总数:369家</div>
+                <div class="etitle">总数:{{amount}}家</div>
                 <div id="outputValue"></div>
             </div>
             <div class="leftItemsBox">
@@ -30,7 +34,7 @@
             </div>
         </div>
         <div class="rightBox">
-            <el-input v-model="search" placeholder="请输入企业名称或项目名称" @input="getSearchResult">
+            <el-input v-model="search" placeholder="请输入企业名称或项目名称">
                 <el-button slot="append" icon="el-icon-search" @click="getSearchResult"></el-button>
             </el-input>
             <div style="height:20px"></div>
@@ -39,9 +43,9 @@
             </div>
             <div class="content">
                 <div class="btnGroups">
-                    <md-tabs @md-changed="getScenList" md-alignment="fixed">
+                    <md-tabs @md-changed="getScenList" md-alignment="fixed" :md-active-tab="activeTab">
                         <md-tab class="movies" id="1" md-label="产品">
-                            <div class="cardBox" v-for="(item,index) in productList" :key="index" @click="clusterMapDis(item.name)">
+                            <div class="cardBox" v-for="(item,index) in productList" :key="index">
                                 <div class="cardContent">
                                     <p class="cardTitle">{{item.productName}}</p>
                                     <p class="cardDetail">{{item.productIntroduce}}</p>
@@ -51,20 +55,46 @@
                         </md-tab>
 
                         <md-tab id="2" class="movies" md-label="项目">
-                            <div class="cardBox" v-for="(item,index) in projectList" :key="index" @click="clusterMapDis(item.name)">
-                                <div class="cardContent">
-                                    <p class="cardTitle">{{item.projectName}}</p>
-                                    <p class="cardDetail">{{item.projectIntroduce}}</p>
-                                    <el-button type="text" style="color:'#ffffff';text-align: right;" @click="showProjectDetail(item)">查看更多>></el-button>
+                            <div class="cardBox" v-for="(item,index) in projectList" :key="index">
+                                <div v-if="!adminFlag">
+                                    <div class="cardContent" v-if="item.isEncryption === 0">
+                                        <p class="cardTitle">{{item.projectName}}</p>
+                                        <p class="cardDetail">{{item.projectIntroduce}}</p>
+                                        <el-button type="text" style="color:'#ffffff';text-align: right;" @click="showProjectDetail(item)">查看更多>></el-button>
+                                    </div>
+                                    <div class="cardContent" v-if="item.isEncryption === 1">
+                                        <p class="cardTitle">{{item.projectName}}</p>
+                                        <p class="cardDetail">加密：{{item.encryptionCode}}</p>
+                                    </div>
+                                </div>
+                                <div v-if="adminFlag">
+                                    <div class="cardContent">
+                                        <p class="cardTitle">{{item.projectName}}</p>
+                                        <p class="cardDetail">{{item.projectIntroduce}}</p>
+                                        <el-button type="text" style="color:'#ffffff';text-align: right;" @click="showProjectDetail(item)">查看更多>></el-button>
+                                    </div>
                                 </div>
                             </div>
                         </md-tab>
                         <md-tab id="3" class="movies" md-label="需求">
-                            <div class="cardBox" v-for="(item,index) in needList" :key="index" @click="clusterMapDis(item.name)">
-                                <div class="cardContent">
-                                    <p class="cardTitle">{{item.demandName}}</p>
-                                    <p class="cardDetail">{{item.demandIndo}}</p>
-                                    <el-button type="text" style="color:'#ffffff';text-align: right;" @click="showNeedDetail(item)">查看更多>></el-button>
+                            <div class="cardBox" v-for="(item,index) in needList" :key="index">
+                                <div v-if="!adminFlag">
+                                    <div class="cardContent" v-if="item.isEncryption === 0">
+                                        <p class="cardTitle">{{item.demandName}}</p>
+                                        <p class="cardDetail">{{item.demandInfo}}</p>
+                                        <el-button type="text" style="color:'#ffffff';text-align: right;" @click="showProjectDetail(item)">查看更多>></el-button>
+                                    </div>
+                                    <div class="cardContent" v-if="item.isEncryption === 1">
+                                        <p class="cardTitle">{{item.demandName}}</p>
+                                        <p class="cardDetail">加密：{{item.encryptionCode}}</p>
+                                    </div>
+                                </div>
+                                <div v-if="adminFlag">
+                                    <div class="cardContent">
+                                        <p class="cardTitle">{{item.demandName}}</p>
+                                        <p class="cardDetail">{{item.demandIndo}}</p>
+                                        <el-button type="text" style="color:'#ffffff';text-align: right;" @click="showNeedDetail(item)">查看更多>></el-button>
+                                    </div>
                                 </div>
                             </div>
                         </md-tab>
@@ -259,7 +289,7 @@ import enterpriseAll from '../fiveData/enterpriseAll.json'
 import enterprise from '../fiveData/enterprise.json'
 import jiangsusheng from '../cityJson/江苏省.json'
 import nanjingDis from '../cityJson/南京市.json'
-import {listBaseInfoByStream,listProductByStream,getCompanyDemand,getCompanyProject,getProduct} from '@/api/home'
+import {listBaseInfoByStream,listProductByStream,getCompanyDemand,getCompanyProject,getProduct,getScale} from '@/api/home'
 
 export default {
     data(){
@@ -392,6 +422,7 @@ export default {
             enterprise:{},
             officeList:[],
             totalValue:581.95,
+            amount:0,
             activeName:'first',
             CompanyProducts:[],
             Employees:[],
@@ -414,7 +445,12 @@ export default {
             needList:[],
             marker:'',
             markersList:[],
-            signmarker:''
+            signmarker:'',
+            dataValue:{},
+            loginFlag:false,
+            adminFlag:false,
+            comName:'',
+            activeTab:'1'
         }
     },
     components:{
@@ -423,10 +459,9 @@ export default {
     mounted(){
         this.checkBrowserVersion()
         this.initMap()
-        // this.getRadarEnterprise()
-        this.getOutputValue()
-        this.getEnterpriseMode()
         this.getScenList(1)
+        this.getEchartsData()
+        this.checkLogin()
     },
     methods:{
         checkBrowserVersion(){
@@ -484,6 +519,14 @@ export default {
             //     window.location.href="https://www.google.cn/chrome/"
             // }
         },
+        checkLogin(){
+            if(!sessionStorage.getItem("user")){
+                this.adminFlag = false
+            }else{
+                this.adminFlag = JSON.parse(sessionStorage.getItem("user")).isAdmin === 1 ? true :false
+                this.comName = JSON.parse(sessionStorage.getItem("user")).comName
+            }
+        },
         initMap(){
             mapboxgl.accessToken = 'pk.eyJ1Ijoibnl5anl5YW5mYXBlbmciLCJhIjoiY2p3ajU4eXI2MGdxcDQ4cGI4cHI2bHhjcSJ9.m4FzyOH_5Yo3YVnroLxk-w';
             this.map = new mapboxgl.Map({
@@ -501,77 +544,94 @@ export default {
                 
             })
         },
+        getEchartsData(){
+            getScale()
+            .then(res=>{
+                this.dataValue = res.data.result
+                this.getEnterpriseMode()
+                this.getOutputValue()
+                this.totalValue = (this.dataValue.downstreamValueSum + this.dataValue.midstreamValueSum + this.dataValue.upstreamValueSum)/10000
+                this.amount = this.dataValue.downstreamCount + this.dataValue.midstreamCount + this.dataValue.upstreamCount
+            })
+        },
         getPrivinceData(id){
-            console.log(this.markersList)
-            if(this.markersList.length > 0){
-                this.markersList.forEach(el=>{
-                    console.log(el)
-                    el.addTo(this.map);
-                    console.log(el);
-                    el.remove();
-                    // el.getLngLat()
-                    // console.log(el.getLngLat())
-                    // var markers = new mapboxgl.Marker().addTo(this.map)
-                    // markers.remove()
-                });
-            };
-            this.markersList = [];
-            mapboxgl.clearStorage();
             this.isClick = id
             let myData = {
                 type:id
             }
+            console.log(myData)
             listBaseInfoByStream(myData)
             .then(res=>{
                 if(res.data.code === 200){
-                    this.markersList = []
                     this.searchReault.features = res.data.result
-                    // let featureList = res.data.result
-                    // console.log(this.searchReault.features)
-                    console.log(this.searchReault.features);
-                    this.searchReault.features.forEach(marker => {
-                        console.log(marker)
-                        var el = document.createElement("div");
-                        var txt = document.createElement("h1");
-                        txt.innerText = marker.properties.mag;
+                    var mag1 = ["<", ["get", "mag"], 5];
+                    var mag2 = ["all", [">=", ["get", "mag"], 10], ["<", ["get", "mag"], 20]];
+                    var mag3 = ["all", [">=", ["get", "mag"], 20], ["<", ["get", "mag"], 30]];
+                    var mag4 = ["all", [">=", ["get", "mag"], 30], ["<", ["get", "mag"], 40]];
+                    var mag5 = [">=", ["get", "mag"], 40];
 
-                        el.appendChild(txt);
-                        let magNum = parseInt(marker.properties.mag)
-
-                        if(magNum< 9.5){
-                            el.style.backgroundImage = "url(" + require("../svg/icon-01.png") + ")";
-                        }else if(magNum > 9.5 && magNum <20.5){
-                            el.style.backgroundImage = "url(" + require("../svg/icon-02.png") + ")";
-                        }else if(magNum > 20.5 && magNum <30.5){
-                            el.style.backgroundImage ="url(" + require("../svg/icon-03.png") + ")";
-                        }else if(magNum > 30.5 && magNum <40.5){
-                            el.style.backgroundImage = "url(" + require("../svg/icon-04.png") + ")";
-                        }else if(magNum > 50.5 && magNum <60.5){
-                            el.style.backgroundImage = "url(" + require("../svg/icon-05.png") + ")";
-                        }else{
-                            el.style.backgroundImage = "url(" + require("../svg/icon-06.png") + ")";
-                        }
-                        el.className = "marker";
-                        el.style.width = "43px";
-                        el.style.height = "53px";
-                        el.addEventListener("click", ()=> {
-                            // window.alert(marker.properties.id);
-                            this.enterpriseFlag = true
-                        
-                            this.parkName = marker.properties.city
-                            const enterList = marker.properties.comList
-                            this.enterpriseList = enterList
-                            this.getQichachaData(this.enterpriseList[0].comName)
+                    if (!this.map.getSource('earthquakes')){
+                        this.map.addSource('earthquakes', {
+                            "type": "geojson",
+                            "data": this.searchReault,
+                            "cluster": false,
+                            "clusterRadius": 80,
+                            "clusterProperties": { // keep separate counts for each magnitude category in a cluster
+                                "mag1": ["+", ["case", mag1, 1, 0]],
+                                "mag2": ["+", ["case", mag2, 1, 0]],
+                                "mag3": ["+", ["case", mag3, 1, 0]],
+                                "mag4": ["+", ["case", mag4, 1, 0]],
+                                "mag5": ["+", ["case", mag5, 1, 0]]
+                            }
                         });
-                        // add marker to map
-                        var aMarker =  new mapboxgl.Marker(el)
-                            .setLngLat(marker.geometry.coordinates)
-                            .addTo(this.map);
-                        console.log(aMarker);
-                        this.markersList.push(aMarker);
-                        console.log(this.markersList);
+                    }else{
+                        this.map.getSource('earthquakes').setData(this.searchReault)
+                    }
+
+                    if (!this.map.getLayer('earthquake_circle')){
+                        this.map.addLayer({
+                            "id": "earthquake_circle",
+                            "type": "circle",
+                            "source": "earthquakes",
+                            "filter": ["!=", "cluster", true],
+                            "paint": {
+                                "circle-color": ["case",
+                                mag1, this.colors[0],
+                                mag2, this.colors[1],
+                                mag3, this.colors[2],
+                                mag4, this.colors[3], this.colors[4]],
+                                "circle-opacity": 0.6,
+                                "circle-radius": 20
+                            }
+                        });
+                    }
+
+                    if (!this.map.getLayer('earthquake_label')){
+                        this.map.addLayer({
+                            "id": "earthquake_label",
+                            "type": "symbol",
+                            "source": "earthquakes",
+                            "cluster": false,
+                            // "filter": ["!=", "cluster", true],
+                            
+                            "layout": {
+                                "text-field": ["number-format", ["get", "mag"], {"min-fraction-digits": 0, "max-fraction-digits": 1}],
+                                "text-font": ["Open Sans Semibold", "Arial Unicode MS Bold"],
+                                "text-size": 18,
+                                "text-allow-overlap":true
+                            },
+                            "paint": {
+                                // "text-color": ["case", ["<", ["get", "mag"], 3], "black", "white"]
+                                "text-color": "white"
+                            }
+                        });
+                    }
+                    // console.log("data没有进来了")
+                    this.map.on('data', (e)=> {
+                        this.map.on('click','earthquake_label',this.handleMarkerClick);
                     });
-                    this.getScenList()
+                    
+                    this.getScenList(this.activeTab)
                 }
             })
         },
@@ -764,6 +824,9 @@ export default {
                     }],
                 }]
             };
+            option.series[0].data[0].value = this.dataValue.upstreamValueSum
+            option.series[0].data[1].value = this.dataValue.midstreamValueSum
+            option.series[0].data[2].value = this.dataValue.downstreamValueSum
             myChart.setOption(option);
             window.addEventListener("resize", () => { myChart.resize();});
         },
@@ -826,6 +889,9 @@ export default {
                     }
                 ]
             }
+            option.series[0].data[0].value = this.dataValue.upstreamCount
+            option.series[0].data[1].value = this.dataValue.midstreamCount
+            option.series[0].data[2].value = this.dataValue.downstreamCount
             myChart.setOption(option);
             window.addEventListener("resize", () => { myChart.resize();});
         },
@@ -1013,26 +1079,17 @@ export default {
             this.map.on('data', (e)=> {
                 // console.log("data进来了")
                 // console.log(e)
-                // if (e.sourceId !== 'earthquakes' || !e.isSourceLoaded) {
-                //     return;
-                // }
-                // this.map.on('move', this.updateMarkers);
-                // this.map.on('moveend',this.updateMarkers);
-                
+                if (e.sourceId !== 'earthquakes' || !e.isSourceLoaded) {
+                    return;
+                }
                 this.map.on('click','earthquake_label',this.handleMarkerClick);
-                
-                // console.log("123")
-                // this.updateMarkers();
             });
         },
         handleMarkerClick(e){
             console.log(e);
-            // setTimeout(()=>{
-                this.enterpriseFlag = true
-            // })
+           
+            this.enterpriseFlag = true
             
-            // const map = e.target;
-            // console.log(map);
             const features = this.map.queryRenderedFeatures(e.point,  { layers: ['earthquake_label'] });
             console.log(features);
             this.parkName = features[0].properties.id
@@ -1041,14 +1098,7 @@ export default {
                 console.log(enterList)
                 // this.enterpriseList = JSON.parse(features[0].properties.test)
                 this.enterpriseList = enterList
-                this.getQichachaData(this.enterpriseList[0].comName)
             }
-            setTimeout(()=>{
-                if(document.getElementById(this.radar)){
-                    this.getSomeOneRadarEnterprise()
-                }
-            },2000)
-            
         },
         handleTabClick(tab,event){
             this.getQichachaData(tab.label)
@@ -1238,7 +1288,8 @@ export default {
             }
         },
         getScenList(params){
-            // console.log(params)
+            console.log(params)
+            console.log(this.activeTab + 'ac')
             let myParmas = 0
             if(!params){
                 myParmas = 1
@@ -1378,6 +1429,79 @@ export default {
             // this.imgTitle = 
             this.imgDialogVisible = true
         },
+        goLogin(){
+            this.$router.push({
+                path:'/login'
+            })
+        },
+        // getPrivinceData(id){
+        //     console.log(this.markersList)
+        //     if(this.markersList.length > 0){
+        //         this.markersList.forEach(el=>{
+        //             console.log(el)
+        //             el.addTo(this.map);
+        //             console.log(el);
+        //             el.remove();
+        //         });
+        //     };
+        //     this.markersList = [];
+        //     mapboxgl.clearStorage();
+        //     this.isClick = id
+        //     let myData = {
+        //         type:id
+        //     }
+        //     listBaseInfoByStream(myData)
+        //     .then(res=>{
+        //         if(res.data.code === 200){
+        //             this.markersList = []
+        //             this.searchReault.features = res.data.result
+        //             console.log(this.searchReault.features);
+        //             this.searchReault.features.forEach(marker => {
+        //                 console.log(marker)
+        //                 var el = document.createElement("div");
+        //                 var txt = document.createElement("h1");
+        //                 txt.innerText = marker.properties.mag;
+
+        //                 el.appendChild(txt);
+        //                 let magNum = parseInt(marker.properties.mag)
+
+        //                 if(magNum< 9.5){
+        //                     el.style.backgroundImage = "url(" + require("../svg/icon-01.png") + ")";
+        //                 }else if(magNum > 9.5 && magNum <20.5){
+        //                     el.style.backgroundImage = "url(" + require("../svg/icon-02.png") + ")";
+        //                 }else if(magNum > 20.5 && magNum <30.5){
+        //                     el.style.backgroundImage ="url(" + require("../svg/icon-03.png") + ")";
+        //                 }else if(magNum > 30.5 && magNum <40.5){
+        //                     el.style.backgroundImage = "url(" + require("../svg/icon-04.png") + ")";
+        //                 }else if(magNum > 50.5 && magNum <60.5){
+        //                     el.style.backgroundImage = "url(" + require("../svg/icon-05.png") + ")";
+        //                 }else{
+        //                     el.style.backgroundImage = "url(" + require("../svg/icon-06.png") + ")";
+        //                 }
+        //                 el.className = "marker";
+        //                 el.style.width = "43px";
+        //                 el.style.height = "53px";
+        //                 el.addEventListener("click", ()=> {
+        //                     // window.alert(marker.properties.id);
+        //                     this.enterpriseFlag = true
+                        
+        //                     this.parkName = marker.properties.city
+        //                     const enterList = marker.properties.comList
+        //                     this.enterpriseList = enterList
+        //                     this.getQichachaData(this.enterpriseList[0].comName)
+        //                 });
+        //                 // add marker to map
+        //                 var aMarker =  new mapboxgl.Marker(el)
+        //                     .setLngLat(marker.geometry.coordinates)
+        //                     .addTo(this.map);
+        //                 console.log(aMarker);
+        //                 this.markersList.push(aMarker);
+        //                 console.log(this.markersList);
+        //             });
+        //             this.getScenList()
+        //         }
+        //     })
+        // },
     }
 }
 </script>
@@ -1425,6 +1549,9 @@ export default {
         align-items: center;
         background-color: rgba(0, 0, 0, 0.6);
         z-index: 2;
+    }
+    .bottomNmae{
+        color: #ffffff;
     }
     .itemsNav{
         display: flex;

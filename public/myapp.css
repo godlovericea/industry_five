@@ -114,6 +114,7 @@
     text-align: left;
     font-size: 16px;
     color: #ffffff;
+    overflow: hidden;
 }
 .cardContent .el-button{
     color: #ffffff;

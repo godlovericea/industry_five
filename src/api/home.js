@@ -10,22 +10,6 @@ export function login(data) {
     data
   })
 }
-// 注册
-export function register(data) {
-  return request({
-    url: '/user/regist',
-    method: 'post',
-    data
-  })
-}
-// 重置密码
-export function reset(data) {
-    return request({
-        url: '/user/reset',
-        method: 'post',
-        data:qs.stringify(data)
-    })
-}
 
 //通过上中下游查询公司基本信息
 export function listBaseInfoByStream(data) {
@@ -75,6 +59,15 @@ export function getCompanyProject(data) {
 export function getProduct(data) {
   return request({
     url: '/companyProduct/getProduct',
+    method: 'post',
+    data: qs.stringify(data)
+  })
+}
+
+//获取产品详情
+export function getScale(data) {
+  return request({
+    url: '/daPing/getScale',
     method: 'post',
     data: qs.stringify(data)
   })
