@@ -12,10 +12,9 @@
                 <i :class="item.icon"></i>
                 <p class="name">{{item.name}}</p>
             </div>
-            <div class="bottomNmaeBox">
+            <div>
                 <el-button size="small" @click="goLogin" v-if="!comName" type="primary" round>登录</el-button>
                 <span class="bottomNmae" v-if="comName">{{comName}}</span>
-                <el-button v-if="comName" type="text" @click="logOut">退出</el-button>
             </div>
         </div>
         <div class="leftBox">
@@ -35,8 +34,8 @@
             </div>
         </div>
         <div class="rightBox">
-            <el-input v-model="search" placeholder="请输入企业名称">
-                <el-button slot="append" icon="el-icon-search" @click="getScenList"></el-button>
+            <el-input v-model="search" placeholder="请输入企业名称或项目名称">
+                <el-button slot="append" icon="el-icon-search" @click="getSearchResult"></el-button>
             </el-input>
             <div style="height:20px"></div>
             <div class="leftheaderBox">
@@ -44,7 +43,7 @@
             </div>
             <div class="content">
                 <div class="btnGroups">
-                    <!-- <md-tabs @md-changed="getScenList" md-alignment="fixed">
+                    <md-tabs @md-changed="getScenList" md-alignment="fixed">
                         <md-tab class="movies" id="1" md-label="产品">
                             <div class="cardBox" v-for="(item,index) in productList" :key="index">
                                 <div class="cardContent">
@@ -54,6 +53,7 @@
                                 </div>
                             </div>
                         </md-tab>
+
                         <md-tab id="2" class="movies" md-label="项目">
                             <div class="cardBox" v-for="(item,index) in projectList" :key="index">
                                 <div v-if="!adminFlag">
@@ -98,151 +98,12 @@
                                 </div>
                             </div>
                         </md-tab>
-                    </md-tabs> -->
-                    <!-- <el-tabs v-model="activeName" @tab-click="handleClick" class="elementTabs">
-                        <el-tab-pane label="产品" name="1">
-                            <div class="cardBox" v-for="(item,index) in productList" :key="index">
-                                <div class="cardContent">
-                                    <p class="cardTitle">{{item.productName}}</p>
-                                    <p class="cardDetail">{{item.productIntroduce}}</p>
-                                    <el-button type="text" style="color:'#ffffff';text-align: right;" @click="showProductDetail(item)">查看更多>></el-button>
-                                </div>
-                            </div>
-                        </el-tab-pane>
-                        <el-tab-pane label="项目" name="2">
-                            <div class="cardBox" v-for="(item,index) in projectList" :key="index">
-                                <div v-if="!adminFlag">
-                                    <div class="cardContent" v-if="item.isEncryption === 0">
-                                        <p class="cardTitle">{{item.projectName}}</p>
-                                        <p class="cardDetail">{{item.projectIntroduce}}</p>
-                                        <el-button type="text" style="color:'#ffffff';text-align: right;" @click="showProjectDetail(item)">查看更多>></el-button>
-                                    </div>
-                                    <div class="cardContent" v-if="item.isEncryption === 1">
-                                        <p class="cardTitle">{{item.projectName}}</p>
-                                        <p class="cardDetail">加密：{{item.encryptionCode}}</p>
-                                    </div>
-                                </div>
-                                <div v-if="adminFlag">
-                                    <div class="cardContent">
-                                        <p class="cardTitle">{{item.projectName}}</p>
-                                        <p class="cardDetail">{{item.projectIntroduce}}</p>
-                                        <el-button type="text" style="color:'#ffffff';text-align: right;" @click="showProjectDetail(item)">查看更多>></el-button>
-                                    </div>
-                                </div>
-                            </div>
-                        </el-tab-pane>
-                        <el-tab-pane label="需求" name="3">
-                            <div class="cardBox" v-for="(item,index) in needList" :key="index">
-                                <div v-if="!adminFlag">
-                                    <div class="cardContent" v-if="item.isEncryption === 0">
-                                        <p class="cardTitle">{{item.demandName}}</p>
-                                        <p class="cardDetail">{{item.demandInfo}}</p>
-                                        <el-button type="text" style="color:'#ffffff';text-align: right;" @click="showProjectDetail(item)">查看更多>></el-button>
-                                    </div>
-                                    <div class="cardContent" v-if="item.isEncryption === 1">
-                                        <p class="cardTitle">{{item.demandName}}</p>
-                                        <p class="cardDetail">加密：{{item.encryptionCode}}</p>
-                                    </div>
-                                </div>
-                                <div v-if="adminFlag">
-                                    <div class="cardContent">
-                                        <p class="cardTitle">{{item.demandName}}</p>
-                                        <p class="cardDetail">{{item.demandIndo}}</p>
-                                        <el-button type="text" style="color:'#ffffff';text-align: right;" @click="showNeedDetail(item)">查看更多>></el-button>
-                                    </div>
-                                </div>
-                            </div>
-                        </el-tab-pane>
-                    </el-tabs> -->
-                    <el-radio-group v-model="activeName" @change="changeActiveName">
-                        <el-radio-button label="产品"></el-radio-button>
-                        <el-radio-button label="项目"></el-radio-button>
-                        <el-radio-button label="需求"></el-radio-button>
-                    </el-radio-group>
-                    <div v-if="activeName === '产品'" class="listBox">
-                        <div class="cardBox" v-for="(item,index) in productList" :key="index">
-                            <div class="cardContent">
-                                <p class="cardTitle">{{item.productName}}</p>
-                                <p class="cardDetail">{{item.productIntroduce}}</p>
-                                <el-button type="text" style="color:'#ffffff';text-align: right;" @click="showProductDetail(item)">查看更多>></el-button>
-                            </div>
-                        </div>
-                    </div>
-                    <div v-if="activeName === '项目'" class="listBox">
-                        <div class="cardBox" v-for="(item,index) in projectList" :key="index">
-                            <div v-if="!adminFlag">
-                                <div class="cardContent" v-if="item.isEncryption === 0">
-                                    <p class="cardTitle">{{item.projectName}}</p>
-                                    <p class="cardDetail">{{item.projectIntroduce}}</p>
-                                    <el-button type="text" style="color:'#ffffff';text-align: right;" @click="showProjectDetail(item)">查看更多>></el-button>
-                                </div>
-                                <div class="cardContent" v-if="item.isEncryption === 1">
-                                    <p class="cardTitle">{{item.projectName}}</p>
-                                    <p class="cardDetail">加密：{{item.encryptionCode}}</p>
-                                </div>
-                            </div>
-                            <div v-if="adminFlag">
-                                <div class="cardContent">
-                                    <p class="cardTitle">{{item.projectName}}</p>
-                                    <p class="cardDetail">{{item.projectIntroduce}}</p>
-                                    <el-button type="text" style="color:'#ffffff';text-align: right;" @click="showProjectDetail(item)">查看更多>></el-button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div v-if="activeName === '需求'" class="listBox">
-                        <div class="cardBox" v-for="(item,index) in needList" :key="index">
-                            <div v-if="!adminFlag">
-                                <div class="cardContent" v-if="item.isEncryption === 0">
-                                    <p class="cardTitle">{{item.demandName}}</p>
-                                    <!-- <p class="cardDetail">{{item.demandInfo}}</p> -->
-                                    <span v-if="item.type === 1">主营产品需求</span>
-                                    <span v-if="item.type === 2">在研项目需求</span>
-                                    <span v-if="item.type === 3">其他合作需求</span>
-                                    <div class="needTagBox">
-                                        <span v-for="(el,index) in item.demandClass" :key="index">
-                                            <span v-if="el===1">资金支持</span>
-                                            <span v-if="el===2">技术支撑</span>
-                                            <span v-if="el===3">市场推广</span>
-                                        </span>
-                                    </div>
-                                    <el-button type="text" style="color:'#ffffff';text-align: right;" @click="showNeedDetail(item)">查看更多>></el-button>
-                                </div>
-                                <div class="cardContent" v-if="item.isEncryption === 1">
-                                    <p class="cardTitle">{{item.demandName}}</p>
-                                    <span v-if="item.type === 1">主营产品需求</span>
-                                    <span v-if="item.type === 2">在研项目需求</span>
-                                    <span v-if="item.type === 3">其他合作需求</span>
-                                    <div class="needTagBox">
-                                        
-                                        <span v-for="(el,index) in item.demandClass" :key="index">
-                                            <span v-if="el===1">资金支持</span>
-                                            <span v-if="el===2">技术支撑</span>
-                                            <span v-if="el===3">市场推广</span>
-                                        </span>
-                                    </div>
-                                    <p class="cardDetail">加密：{{item.encryptionCode}}</p>
-                                </div>
-                            </div>
-                            <div v-if="adminFlag">
-                                <div class="cardContent">
-                                    <p class="cardTitle">{{item.demandName}}</p>
-                                    <p class="cardDetail">{{item.demandInfo}}</p>
-                                    <span v-if="item.type === 1">主营产品需求</span>
-                                    <span v-if="item.type === 2">在研项目需求</span>
-                                    <span v-if="item.type === 3">其他合作需求</span>
-                                    <div class="needTagBox">
-                                        <span v-for="(el,index) in item.demandClass" :key="index">
-                                            <span v-if="el===1">资金支持</span>
-                                            <span v-if="el===2">技术支撑</span>
-                                            <span v-if="el===3">市场推广</span>
-                                        </span>
-                                    </div>
-                                    <el-button type="text" style="color:'#ffffff';text-align: right;" @click="showNeedDetail(item)">查看更多>></el-button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    </md-tabs>
+                    <el-tabs v-model="activeName" @tab-click="handleClick">
+                        <el-tab-pane label="用户管理" name="1">产品</el-tab-pane>
+                        <el-tab-pane label="配置管理" name="2">项目</el-tab-pane>
+                        <el-tab-pane label="角色管理" name="3">需求</el-tab-pane>
+                    </el-tabs>
                 </div>
             </div>
         </div>
@@ -257,7 +118,7 @@
                 <div class="stepsContent">
                     <p class="stepsDetail">{{sceanData.info}}</p>
                 </div>
-                <p class="stepsTitle">② 图片介绍:</p>
+                <p class="stepsTitle">② 图片和视频介绍:</p>
                 <div class="stepsContent">
                     <!-- <img class="shortcut" v-for="(item,index) in companySceneImgDTOList" :key="index" :src="item.scenarioImg" alt=""> -->
                     <el-image 
@@ -302,23 +163,56 @@
                 <el-tabs v-model="activeIndex" :tab-position="tabPosition" style="height: 200px;" :stretch="false" @tab-click="handleTabClick">
                     <el-tab-pane  v-for="(item,index) in enterpriseList" :key="index" :label="item.comName">
                         <div class="enterpriseDetail">
+                            <!-- <singleEcharts :id="item.company"></singleEcharts> -->
                             <div class="detailBox">
-                                <p>法人：{{item.opername}}</p>
-                                <p>注册资金：{{item.registcapi}}</p>
-                                <p>地址：{{item.product}}</p>
-                                <p>成立日期：{{item.startdate}}</p>
-                                <p>简介：{{item.info}}</p>
-                                <p>官方网站：<a target="_blank" style="color:#fff" :href="item.websiteAddress">{{item.websiteAddress}}</a></p>
-                                <p>员工数：{{item.staffnum }}</p>
-                                <p>2019营收：{{item.lastincome }}万元</p>
-                                <p>2018营收：{{item.oldincome }}万元</p>
-                                <p>股票代码：{{item.stockCode }}</p>
-                                <p>员工数：{{item.staffnum }}</p>
-                                <p>联系人：{{item.concatperson }}</p>
-                                <p>电话：{{item.phone }}</p>
-                                <p>邮箱：{{item.email }}</p>
+                                <p>主营：{{item.business}}</p>
+                                <p>2019收入：{{item.income}}万元</p>
+                                <p>产品：{{item.product}}</p>
+                                <p>预期效果：{{item.hopelis}}</p>
                             </div>
                         </div>
+                       <div class="tagBox">
+                            <p class="qichachaTitle">公司基本信息（以下数据来源于企查查）</p>
+                            <div class="taglist">
+                                <p class="tagTitle">主要职员：</p>
+                                <div v-for="(item,index) in Employees" :key="index" class="tagCintent">
+                                    <p>
+                                        <span>{{item.Name}}</span>
+                                        <span class="secondSpan">{{item.Job}}</span>
+                                    </p>
+                                </div>
+                                <p class="tagTitle">产品信息：</p>
+                                <div v-for="(item,index) in CompanyProducts" :key="index" class="tagCintent">
+                                    <p>所属领域:<span class="secondSpan">{{item.Domain}}</span></p> 
+                                    <p>商标图片:<a :href="item.ImageUrl" target="_blank" style="color:#fff;margin-left:10px">{{item.ImageUrl}}</a></p>
+                                    <p>商标名称:<span class="secondSpan">{{item.Name}}</span></p>
+                                    <p>官网地址:<a :href="item.Link" target="_blank" style="color:#fff;margin-left:10px">{{item.Link}}</a></p>
+                                    <p>产品标签:<span class="secondSpan">{{item.Tags}}</span></p>
+                                </div>
+                                <p class="tagTitle">知识产权：</p>
+                                <div class="tagCintent">
+                                    <p>专利数量：{{knowledge}}</p>
+                                </div>
+                                <p class="tagTitle">产业信息：</p>
+                                <div class="tagCintent">
+                                    <p>产业范围：{{Industry.Industry}}</p>
+                                </div>
+                                <p class="tagTitle">股东信息：</p>
+                                <div v-for="item in Partners" :key="item.KeyNo" class="tagCintent">
+                                    <span>{{item.StockName}}</span>
+                                    <span class="secondSpan">{{item.StockPercent}}</span>
+                                </div>
+                                <p class="tagTitle">主营业务：</p>
+                                <div class="tagCintent">
+                                    <p>{{ScopeIn}}</p>
+                                </div>
+                                <p class="tagTitle">联系方式：</p>
+                                <div class="tagCintent">
+                                    <p>地址：<span class="secondSpan">{{ContactInfo.adress}}</span></p>
+                                    <!-- <p>电话：<span class="secondSpan">{{ContactInfo.PhoneNumber}}</span></p> -->
+                                </div>
+                            </div>
+                       </div>
                     </el-tab-pane>
                 </el-tabs>
             </div>
@@ -336,16 +230,10 @@
                             <singleEcharts :id="enterpriseName"></singleEcharts>
                             <div class="detailBox">
                                 <!-- <p>法人：{{enterprise.legalPerson}}</p> -->
-                                <p>法人：{{enterprise.opername}}</p>
-                                <p>注册资金：{{enterprise.registcapi}}</p>
-                                <p>地址：{{enterprise.product}}</p>
-                                <p>简介：{{enterprise.info}}</p>
-                                <p>官方网站：<a :href="enterprise.websiteAddress">{{enterprise.websiteAddress}}</a></p>
-                                <p>员工数：{{enterprise.staffnum }}</p>
-                                <p>2019营收：{{enterprise.lastincome }}</p>
-                                <p>2018营收：{{enterprise.oldincome }}</p>
-                                <p>股票代码：{{enterprise.stockCode }}</p>
-                                <p>员工数：{{enterprise.staffnum }}</p>
+                                <p>主营：{{enterprise.business}}</p>
+                                <p>2019收入：{{enterprise.income}}</p>
+                                <p>产品：{{enterprise.product}}</p>
+                                <p>预期效果：{{enterprise.hopelis}}</p>
                             </div>
                         </div>
                        <div class="tagBox">
@@ -406,7 +294,7 @@ import enterpriseAll from '../fiveData/enterpriseAll.json'
 import enterprise from '../fiveData/enterprise.json'
 import jiangsusheng from '../cityJson/江苏省.json'
 import nanjingDis from '../cityJson/南京市.json'
-import {listBaseInfoByStream,listProductByStream,getCompanyProject,getProduct,getScale,getCompanyProjectDemand,getCompanyProductDemand,getCompanyOtherDemand} from '@/api/home'
+import {listBaseInfoByStream,listProductByStream,getCompanyDemand,getCompanyProject,getProduct,getScale} from '@/api/home'
 
 export default {
     data(){
@@ -540,7 +428,7 @@ export default {
             officeList:[],
             totalValue:581.95,
             amount:0,
-            activeName:'产品',
+            activeName:'first',
             CompanyProducts:[],
             Employees:[],
             detail:{},
@@ -567,20 +455,26 @@ export default {
             loginFlag:false,
             adminFlag:false,
             comName:'',
-            activeTab:1,
-            newActiveTab:0,
-            oldActiveTab:0
+            oldActiveTab:1,
+            newActiveTab:0
         }
     },
     components:{
         singleEcharts
+    },
+    watch:{
+        oldActiveTab(newVal,oldVal){
+            console.log(newVal + "new")
+            console.log(oldVal + "old")
+            this.newActiveTab = newVal
+            this.getScenList(this.newActiveTab)
+        }
     },
     mounted(){
         this.checkBrowserVersion()
         this.initMap()
         this.getEchartsData()
         this.checkLogin()
-        this.getScenList()
     },
     methods:{
         checkBrowserVersion(){
@@ -750,7 +644,7 @@ export default {
                         this.map.on('click','earthquake_label',this.handleMarkerClick);
                     });
                     
-                    this.getScenList()
+                    this.getScenList(this.activeTab)
                 }
             })
         },
@@ -1053,8 +947,6 @@ export default {
         },
         closeEnterpriseDialog(){
             this.enterpriseFlag = false
-            this.search = ''
-            this.getScenList()
         },
         getSomeOneRadarEnterprise(){
             let myChart=echarts.init(document.getElementById(this.radar))
@@ -1213,20 +1105,16 @@ export default {
             
             const features = this.map.queryRenderedFeatures(e.point,  { layers: ['earthquake_label'] });
             console.log(features);
-            this.parkName = features[0].properties.city
+            this.parkName = features[0].properties.id
             if (features.length > 0){
                 const enterList = JSON.parse(features[0].properties.comList)
                 console.log(enterList)
                 // this.enterpriseList = JSON.parse(features[0].properties.test)
                 this.enterpriseList = enterList
-                this.search = this.enterpriseList[0].comName
-                this.getScenList()
             }
         },
         handleTabClick(tab,event){
-            console.log(tab.label)
-            this.search = tab.label
-            this.getScenList()
+            this.getQichachaData(tab.label)
         },
         getQixiaDistribute(){
             const dottedLine = jiangsusheng
@@ -1412,19 +1300,23 @@ export default {
                 this.map.setStyle('http://106.15.47.224:8688/styles/newblue/style.json') 
             }
         },
-        getScenList(){
-            let productType = 0
-            if(this.activeName === '产品'){
-                productType = 1
-            } else if(this.activeName === '项目'){
-                productType = 2
-            }else {
-                productType = 3
+        getScenList(params){
+            this.productList = []
+            this.projectList = []
+            this.needList = []
+            console.log(params + "params")
+            
+            // console.log(this.activeTab + 'ac')
+            
+            if(!params){
+                this.oldActiveTab = 1
+            }else{
+                this.oldActiveTab = params
             }
             let myData = {
-                "companyName": this.search,
+                "companyName": "",
                 "productName": "",
-                "productType": productType,
+                "productType": Number(this.newActiveTab),
                 "type": this.isClick,
             }
             listProductByStream(myData)
@@ -1450,7 +1342,7 @@ export default {
                     // console.log(l.scenarioImg.substring(21))
                     l.scenarioImg = 'http://qiniu.iwooke'+ l.scenarioImg.substring(21)
                 })
-                this.companySceneImgDTOList = res.data.result.imgList
+                this.companySceneImgDTOList = res.data.result.companySceneImgDTOList
                 this.srcList = []
                 this.companySceneImgDTOList.forEach(l=>{
                     this.srcList.push(l.scenarioImg)
@@ -1502,16 +1394,13 @@ export default {
                 this.sceanData.info = res.data.result.productIntroduce
                 
                 this.srcList = []
-                if(res.data.result.imgList.length > 0){
-                    res.data.result.imgList.forEach(l=>{
-                        this.srcList.push(l.imgUrl)
-                    })
-                    this.url = this.srcList[0]
-                }else{
-                    this.srcList = []
-                    this.url=''
-                }
+                res.data.result.imgList.forEach(l=>{
+                    l.imgUrl = 'http://qiniu.iwooke'+ l.imgUrl.substring(21)
+                    this.srcList.push(l.imgUrl)
+                })
+                this.url = this.srcList[0]
             })
+
         },
         showProjectDetail(params){
             this.enterpriseFlag = false
@@ -1526,50 +1415,32 @@ export default {
                 this.sceanData.title = res.data.result.projectName
                 this.sceanData.info = res.data.result.projectIntroduce
                 this.srcList = []
-                if(res.data.result.imgList && res.data.result.imgList.length > 0){
-                    res.data.result.imgList.forEach(l=>{
-                        this.srcList.push(l.imgUrl)
-                    })
-                    this.url = this.srcList[0]
-                }
+                res.data.result.imgList.forEach(l=>{
+                    l.imgUrl = 'http://qiniu.iwooke'+ l.imgUrl.substring(21)
+                    this.srcList.push(l.imgUrl)
+                })
+                this.url = this.srcList[0]
             })
         },
         showNeedDetail(params){
             this.enterpriseFlag = false
             console.log(params)
             this.sceanFlag = true
-            let myData = {}
-            if(params.type === 1){
-                myData = {
-                    companyProductDemandId:params.demandId
-                }
-                getCompanyProductDemand(myData)
-                .then(res=>{
-                    this.sceanData = res.data.result
-                    this.sceanData.title = res.data.result.companyProductName
-                    this.sceanData.info = res.data.result.demandInfo
-                })
-            }else if(params.type === 2){
-                myData = {
-                    getCompanyProjectDemand:params.demandId
-                }
-                getCompanyProjectDemand(myData)
-                .then(res=>{
-                    this.sceanData = res.data.result
-                    this.sceanData.title = res.data.result.companyProjectName
-                    this.sceanData.info = res.data.result.demandInfo
-                })
-            } else {
-                myData = {
-                    companyOtherDemandId:params.demandId
-                }
-                getCompanyOtherDemand(myData)
-                .then(res=>{
-                    this.sceanData = res.data.result
-                    this.sceanData.title = res.data.result.companyOtherName
-                    this.sceanData.info = res.data.result.demandInfo
-                })
+            let myData = {
+                companyDemandId:params.companyDemandId
             }
+            getCompanyDemand(myData)
+            .then(res=>{
+                this.sceanData = res.data.result
+                this.sceanData.title = res.data.result.demandName
+                this.sceanData.info = res.data.result.demandIndo
+                this.srcList = []
+                res.data.result.imgList.forEach(l=>{
+                    l.imgUrl = 'http://qiniu.iwooke'+ l.imgUrl.substring(21)
+                    this.srcList.push(l.imgUrl)
+                })
+                this.url = this.srcList[0]
+            })
         },
         showImgBox(){
             // this.imgTitle = 
@@ -1580,15 +1451,6 @@ export default {
                 path:'/login'
             })
         },
-        changeActiveName(val){
-            this.getScenList()
-        },
-        logOut(){
-            this.$router.push({
-                path:'/login'
-            })
-            sessionStorage.clear()
-        }
         // getPrivinceData(id){
         //     console.log(this.markersList)
         //     if(this.markersList.length > 0){
@@ -1707,12 +1569,6 @@ export default {
     }
     .bottomNmae{
         color: #ffffff;
-    }
-    .bottomNmaeBox{
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
     }
     .itemsNav{
         display: flex;

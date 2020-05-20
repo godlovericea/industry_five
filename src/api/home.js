@@ -37,10 +37,28 @@ export function listCompanyProject(data) {
   })
 }
 
-//获取公司需求详情
-export function getCompanyDemand(data) {
+//获取其它需求详情
+export function getCompanyOtherDemand(data) {
   return request({
-    url: '/companyDemand/getCompanyDemand',
+    url: '/companyDemand/getCompanyOtherDemand',
+    method: 'post',
+    data:qs.stringify(data)
+  })
+}
+
+//获取产品需求详情
+export function getCompanyProductDemand(data) {
+  return request({
+    url: '/companyDemand/getCompanyProductDemand',
+    method: 'post',
+    data:qs.stringify(data)
+  })
+}
+
+//获取项目需求详情
+export function getCompanyProjectDemand(data) {
+  return request({
+    url: '/companyDemand/getCompanyProjectDemand',
     method: 'post',
     data:qs.stringify(data)
   })

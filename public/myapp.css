@@ -265,6 +265,7 @@
 
 .btnGroups{
     display: flex;
+    flex-direction: column;
     justify-content: space-between;
     align-items: center;
 }
@@ -399,4 +400,33 @@
     color: rgb(19, 206, 102);
     /* color: #ffffff; */
     /* color: #DC143C; */
+}
+.btnGroups .el-radio-group{
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.btnGroups .el-radio-button__orig-radio:checked+.el-radio-button__inner{
+    background-color: #1679D5;
+    /* background-color: transparent; */
+    border-bottom: 4px solid #1679D5;
+    border-left: none;
+}
+.btnGroups .el-radio-button__inner{
+    background-color: transparent;
+    border: none;
+}
+.btnGroups .el-radio-button:first-child .el-radio-button__inner{
+    border-left: none;
+}
+.listBox{
+    max-height: 572px;
+    overflow-y: auto;
+    width: 100%;
+}
+.needTagBox{
+    display: flex;
+    justify-content: space-between;
+    color: #cccccc;
 }
