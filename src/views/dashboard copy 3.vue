@@ -744,8 +744,12 @@ export default {
                                 "text-color": "white"
                             }
                         });
-                        this.map.on('click','earthquake_label',this.handleMarkerClick);
                     }
+                    // console.log("data没有进来了")
+                    this.map.on('data', (e)=> {
+                        this.map.on('click','earthquake_label',this.handleMarkerClick);
+                    });
+                    
                     this.getScenList()
                 }
             })
@@ -1527,9 +1531,10 @@ export default {
             this.getScenList()
         },
         logOut(){
-            this.comName = null
+            this.$router.push({
+                path:'/login'
+            })
             sessionStorage.clear()
-            this.$router.go(0)
         }
     }
 }
