@@ -2,7 +2,7 @@
     <div id="map">
         <div class="headerBox">
             <img src="../../src/assets/images/logo.png" alt="" />
-            <p class="title">江苏省5G产业联盟产业生态图</p>
+            <p class="title">全省5G产业生态在线系统</p>
         </div>
         <div class="switchBox">
             <span class="switchTitle">卫星影像</span
