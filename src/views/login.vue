@@ -34,7 +34,7 @@
       
       <el-button :loading="loading" type="primary" style="width:100%;margin-bottom:30px;" @click.native.prevent="handleLogin">登录</el-button>
       <div class="regBox">
-        <a target="_blank" href="http://120.55.161.93/fiveadmin/#/">后台管理</a>
+        <a target="_blank" href="http://5gecomap.com/fiveadmin/#/">后台管理</a>
       </div>
     </el-form>
   </div>
