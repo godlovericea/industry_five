@@ -854,7 +854,8 @@ export default {
                 "pk.eyJ1Ijoibnl5anl5YW5mYXBlbmciLCJhIjoiY2p3ajU4eXI2MGdxcDQ4cGI4cHI2bHhjcSJ9.m4FzyOH_5Yo3YVnroLxk-w"
             this.map = new mapboxgl.Map({
                 container: "map",
-                style: "http://106.15.47.224:8688/styles/newblue/style.json",
+                // style: "http://106.15.47.224:8688/styles/newblue/style.json",
+                style: "mapbox://styles/zplinze/ck2wvh2pa05ip1cr8supcaivg",
                 center: [119.8526, 32.910144],
                 zoom: 7.5,
                 pitch: 60,
