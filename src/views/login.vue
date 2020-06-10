@@ -5,6 +5,7 @@
       <div class="title-container">
         <h3 class="title">登录</h3>
       </div>
+      <div v-for="(item,index) in comListArray" :key="index" class="whitebx">{{item}}</div>
 
       <el-form-item prop="username">
         <el-input
@@ -42,7 +43,7 @@
 
 <script>
 import {login} from '@/api/home'
-
+import comList from '@/assets/com.json'
 export default {
   name: 'Login',
   data() {
@@ -56,7 +57,8 @@ export default {
       },
       loading: false,
       passwordType: 'password',
-      redirect: undefined
+      redirect: undefined,
+      comListArray:[]
     }
   },
   watch: {
@@ -66,6 +68,13 @@ export default {
       },
       immediate: true
     }
+  },
+  mounted () {
+    let arr = comList
+    arr.forEach(l=>{
+      this.comListArray.push(l.name)
+    })
+    console.log(this.comListArray)
   },
   methods: {
     showPwd() {
@@ -134,6 +143,9 @@ $cursor: #fff;
 
 /* reset element-ui css */
 .login-container {
+  .whitebx{
+    color: white;
+  }
   .el-input {
     display: inline-block;
     height: 47px;
