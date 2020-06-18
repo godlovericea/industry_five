@@ -464,8 +464,8 @@ export default {
     },
     watch:{
         oldActiveTab(newVal,oldVal){
-            console.log(newVal + "new")
-            console.log(oldVal + "old")
+            // console.log(newVal + "new")
+            // console.log(oldVal + "old")
             this.newActiveTab = newVal
             this.getScenList(this.newActiveTab)
         }
@@ -1099,16 +1099,16 @@ export default {
             });
         },
         handleMarkerClick(e){
-            console.log(e);
+            // console.log(e);
            
             this.enterpriseFlag = true
             
             const features = this.map.queryRenderedFeatures(e.point,  { layers: ['earthquake_label'] });
-            console.log(features);
+            // console.log(features);
             this.parkName = features[0].properties.id
             if (features.length > 0){
                 const enterList = JSON.parse(features[0].properties.comList)
-                console.log(enterList)
+                // console.log(enterList)
                 // this.enterpriseList = JSON.parse(features[0].properties.test)
                 this.enterpriseList = enterList
             }

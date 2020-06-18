@@ -1579,11 +1579,11 @@ export default {
             const features = this.map.queryRenderedFeatures(e.point, {
                 layers: ["earthquake_label"],
             })
-            console.log(features)
+            // console.log(features)
             this.parkName = features[0].properties.city
             if (features.length > 0) {
                 const enterList = JSON.parse(features[0].properties.comList)
-                console.log(enterList)
+                // console.log(enterList)
                 // this.enterpriseList = JSON.parse(features[0].properties.test)
                 this.enterpriseList = enterList
                 this.search = this.enterpriseList[0].comName
@@ -1591,7 +1591,7 @@ export default {
             }
         },
         handleTabClick(tab, event) {
-            console.log(tab.label)
+            // console.log(tab.label)
             this.search = tab.label
             this.getScenList()
         },
@@ -1780,7 +1780,7 @@ export default {
                 })
         },
         showInMapbox(params) {
-            console.log(params)
+            // console.log(params)
             this.sceanFlag = false
             let sceanEnterPrise = []
             enterpriseAll.features.forEach((l) => {
@@ -1837,8 +1837,13 @@ export default {
             })
         },
         showProductDetail(params) {
+            if (!sessionStorage.getItem("user")) {
+                this.$router.push({
+                    path: '/login'
+                })
+            }
             this.enterpriseFlag = false
-            console.log(params)
+            // console.log(params)
             this.sceanFlag = true
             let myData = {
                 companyProductId: params.companyProductId,
@@ -1861,8 +1866,13 @@ export default {
             })
         },
         showProjectDetail(params) {
+            if (!sessionStorage.getItem("user")) {
+                this.$router.push({
+                    path: '/login'
+                })
+            }
             this.enterpriseFlag = false
-            console.log(params)
+            // console.log(params)
             this.sceanFlag = true
             let myData = {
                 companyProjectId: params.companyProjectId,
@@ -1884,8 +1894,13 @@ export default {
             })
         },
         showNeedDetail(params) {
+            if (!sessionStorage.getItem("user")) {
+                this.$router.push({
+                    path: '/login'
+                })
+            }
             this.enterpriseFlag = false
-            console.log(params)
+            // console.log(params)
             this.sceanFlag = true
             let myData = {}
             if (params.type === 1) {

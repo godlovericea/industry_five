@@ -5,8 +5,6 @@
       <div class="title-container">
         <h3 class="title">登录</h3>
       </div>
-      <div v-for="(item,index) in comListArray" :key="index" class="whitebx">{{item}}</div>
-
       <el-form-item prop="username">
         <el-input
           ref="username"
@@ -68,13 +66,6 @@ export default {
       },
       immediate: true
     }
-  },
-  mounted () {
-    let arr = comList
-    arr.forEach(l=>{
-      this.comListArray.push(l.name)
-    })
-    console.log(this.comListArray)
   },
   methods: {
     showPwd() {
