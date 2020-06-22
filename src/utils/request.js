@@ -38,19 +38,19 @@ service.interceptors.response.use(
     // console.log(response)
     if(res.data.code === 201) {
       Message({
-        message: res.message || 'Error',
+        message: res.data.message || 'Error',
         type: 'error',
         duration: 5 * 1000
       })
-      router.push({
-        path: '/'
-      })
+      // router.push({
+      //   path: '/'
+      // })
       sessionStorage.clear()
       return false
     }
     if (res.data.code !== 200) {
       Message({
-        message: res.message || 'Error',
+        message: res.data.message || 'Error',
         type: 'error',
         duration: 5 * 1000
       })

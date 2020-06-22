@@ -404,40 +404,21 @@
                 <div class="stepsContent">
                     <p class="stepsDetail">{{ sceanData.info }}</p>
                 </div>
-                <p class="stepsTitle">② 图片介绍:</p>
-                <div class="stepsContent">
-                    <!-- <img class="shortcut" v-for="(item,index) in companySceneImgDTOList" :key="index" :src="item.scenarioImg" alt=""> -->
-                    <el-image
-                        style="width: 200px; height: 120px"
-                        :src="url"
-                        :preview-src-list="srcList"
-                    >
-                    </el-image>
-                    <!-- <el-carousel :interval="4000">
-                        <el-carousel-item v-for="(item,index) in companySceneImgDTOList" :key="index">
-                            <el-popover placement="top" trigger="click">
-                                <img class="realImg" :src="item.scenarioImg" alt="">
-                                <img class="shortcut" slot="reference" :src="item.scenarioImg" alt="">
-                            </el-popover>
-                        </el-carousel-item>
-                    </el-carousel> -->
-                    <!-- <video class="myVideo" :src="videoUrl" controls></video> -->
-                </div>
-                <p class="stepsTitle">③ 视频介绍:</p>
-                <div class="stepsContent">
-                    <video class="myVideo" :src="videoUrl" controls></video>
-                </div>
-                <!-- <p class="stepsTitle">④ 关联企业:</p>
-                <div class="stepsContent">
-                    <div class="sceanEnterBox">
-                        <div class="sceanEnterItems" v-for="item in officeList" :key="item.index" @click="showInMapbox(item.companyName)">
-                            <p class="enterName">{{item.companyName}}</p>
-                            <p class="enterP">项目:{{item.business}}</p>
-                            <p class="enterP">注册资金:{{item.registeredCapital}}万元</p>
-                            <p class="enterP">地址:{{item.area}}</p>
-                        </div>
+                <div v-if="proFlag">
+                    <p class="stepsTitle">② 图片介绍:</p>
+                    <div class="stepsContent">
+                        <el-image
+                            style="width: 200px; height: 120px"
+                            :src="url"
+                            :preview-src-list="srcList"
+                        >
+                        </el-image>
                     </div>
-                </div> -->
+                    <p class="stepsTitle">③ 视频介绍:</p>
+                    <div class="stepsContent">
+                        <video class="myVideo" :src="videoUrl" controls></video>
+                    </div>
+                </div>
             </div>
         </div>
         <div class="sceanDetailDialog" v-if="enterpriseFlag">
@@ -768,6 +749,7 @@ export default {
             newActiveTab: 0,
             oldActiveTab: 0,
             popup: "",
+            proFlag: false
         }
     },
     components: {
@@ -1837,6 +1819,7 @@ export default {
             })
         },
         showProductDetail(params) {
+            this.proFlag = true
             if (!sessionStorage.getItem("user")) {
                 this.$router.push({
                     path: '/login'
@@ -1849,23 +1832,29 @@ export default {
                 companyProductId: params.companyProductId,
             }
             getProduct(myData).then((res) => {
-                this.sceanData = res.data.result
-                this.sceanData.title = res.data.result.productName
-                this.sceanData.info = res.data.result.productIntroduce
+                console.log(res)
+                if (res && res.data.code === 200){
+                    this.sceanData = res.data.result
+                    this.sceanData.title = res.data.result.productName
+                    this.sceanData.info = res.data.result.productIntroduce
 
-                this.srcList = []
-                if (res.data.result.imgList.length > 0) {
-                    res.data.result.imgList.forEach((l) => {
-                        this.srcList.push(l.imgUrl)
-                    })
-                    this.url = this.srcList[0]
-                } else {
                     this.srcList = []
-                    this.url = ""
+                    if (res.data.result.imgList.length > 0) {
+                        res.data.result.imgList.forEach((l) => {
+                            this.srcList.push(l.imgUrl)
+                        })
+                        this.url = this.srcList[0]
+                    } else {
+                        this.srcList = []
+                        this.url = ""
+                    }
+                }else{
+                    console.log(res.data)
                 }
             })
         },
         showProjectDetail(params) {
+            this.proFlag = false
             if (!sessionStorage.getItem("user")) {
                 this.$router.push({
                     path: '/login'
@@ -1878,22 +1867,25 @@ export default {
                 companyProjectId: params.companyProjectId,
             }
             getCompanyProject(myData).then((res) => {
-                this.sceanData = res.data.result
-                this.sceanData.title = res.data.result.projectName
-                this.sceanData.info = res.data.result.projectIntroduce
-                this.srcList = []
-                if (
-                    res.data.result.imgList &&
-                    res.data.result.imgList.length > 0
-                ) {
-                    res.data.result.imgList.forEach((l) => {
-                        this.srcList.push(l.imgUrl)
-                    })
-                    this.url = this.srcList[0]
+                if(res && res.data.code === 200) {
+                    this.sceanData = res.data.result
+                    this.sceanData.title = res.data.result.projectName
+                    this.sceanData.info = res.data.result.projectIntroduce
+                    this.srcList = []
+                    if (
+                        res.data.result.imgList &&
+                        res.data.result.imgList.length > 0
+                    ) {
+                        res.data.result.imgList.forEach((l) => {
+                            this.srcList.push(l.imgUrl)
+                        })
+                        this.url = this.srcList[0]
+                    }
                 }
             })
         },
         showNeedDetail(params) {
+            this.proFlag = false
             if (!sessionStorage.getItem("user")) {
                 this.$router.push({
                     path: '/login'
